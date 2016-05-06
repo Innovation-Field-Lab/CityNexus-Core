@@ -28,7 +28,11 @@ class PackageServiceProvider extends ServiceProvider
 
         $this->publishes([
             __DIR__ . '/views/master' => base_path('resources/views/vendor/citynexus/master'),
-        ], 'public');
+        ], 'master');
+
+        $this->publishes([
+            __DIR__ . '/views/auth' => base_path('resources/views/vendor/citynexus/auth'),
+        ], 'auth');
 
         $this->publishes([
             __DIR__ . '/migrations/' => database_path('migrations')
