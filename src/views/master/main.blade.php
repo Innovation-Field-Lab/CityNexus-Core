@@ -1,4 +1,4 @@
-@include('master._header')
+@include('citynexus::master._header')
 
 
 <body class="fixed-left">
@@ -6,9 +6,9 @@
 <!-- Begin page -->
 <div id="wrapper">
 
-    @include('master._top_bar')
+    @include('citynexus::master._top_bar')
 
-    @include('master._left_menu')
+    @include('citynexus::master._left_menu')
 
     <!-- ============================================================== -->
     <!-- Start right Content here -->
@@ -192,7 +192,7 @@
             })
 </script>
 
-@include('includes._alerts')
+@include('citynexus::includes._alerts')
 
 @stack('js_footer')
 

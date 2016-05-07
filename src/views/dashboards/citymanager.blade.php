@@ -29,7 +29,7 @@ $section = 'dashboard';
                 <div class="widget-chart-1">
                     <div class="widget-chart-box-1">
                         <input data-plugin="knob" data-width="80" data-height="80" data-fgColor="#f05050 "
-                               data-bgColor="#F9B9B9" value="{{intval($npcount / $pcount * 100)}}"
+                               data-bgColor="#F9B9B9" value="@if($pcount > 0){{intval($npcount / $pcount * 100)}}@else 0 @endif"
                                data-skin="tron" data-angleOffset="180" data-readOnly=true
                                data-thickness=".15"/>
                     </div>
