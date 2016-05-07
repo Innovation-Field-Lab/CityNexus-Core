@@ -2,8 +2,11 @@
 
 namespace CityNexus\CityNexus\Http;
 
+use Carbon\Carbon;
+use CityNexus\CityNexus\ProcessData;
 use CityNexus\CityNexus\Property;
 use CityNexus\CityNexus\Upload;
+use Illuminate\Database\Schema\Blueprint;
 use Illuminate\Support\Facades\Artisan;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Schema;
@@ -208,13 +211,31 @@ class TablerController extends Controller
 
     public function processUpload($table, $data, $upload_id)
     {
+        $now = Carbon::now();
+
+        if(!Schema::hasColumn($table->table_name, 'raw'))
+        {
+            Schema::table($table->table_name, function (Blueprint $table) {
+                $table->json('raw');
+            });
+        }
 
         try
         {
+            $upload = null;
             foreach($data as $i)
             {
-                $this->dispatch(new UploadData($i, $table->id, $upload_id));
+                $upload[] = ['raw' => json_encode($i), 'processed_at' => $now, 'upload_id' => $upload_id, 'created_at' => $now, 'updated_at' => $now];
             }
+
+            DB::table($table->table_name)->insert($upload);
+            $new_ids = DB::table($table->table_name)->where('upload_id', $upload_id)->lists('id');
+
+            foreach($new_ids as $record)
+            {
+                $this->dispatch(new ProcessData($record, $table));
+            }
+
         }
         catch(Exception $e)
         {
