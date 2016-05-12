@@ -40,4 +40,9 @@ class Property extends Model
     {
         return $this->tags()->lists('tag');
     }
+
+    public function location()
+    {
+        return $this->hasOne('\CityNexus\CityNexus\Location');
+    }
 }

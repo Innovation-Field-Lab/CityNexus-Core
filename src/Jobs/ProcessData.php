@@ -52,17 +52,18 @@ class ProcessData extends Job implements SelfHandling, ShouldQueue
         {
             // Get property record
             $property = Property::find($id);
-            if($property->lat == null) {
+            if($property->location_id == null) {
+                $location = Location::firstOrCreate(['full_address' => $property->house_number . ' ' . $property->street_name . ' ' . $property->street_type]);
+             if($location->lat == null && env('APP_ENV') != 'testing' && env('APP_ENV') != 'local')
+             {
+                 $geocode = Geocoder::geocode(   $property->full_address  . ', ' . config('citynexus.city_state'));
+                 $location->lat = $geocode->getLatitude();
+                 $location->long = $geocode->getLongitude();
+             }
+                $property->location_id = $location->id;
+                $property->save();
             }
-            $geocode = Geocoder::geocode(   $property->full_address  . ', ' . config('citynexus.city_state'));
 
-            if($geocode && env('APP_ENV') != 'local' && env('APP_ENV') != 'testing')
-            {
-                $property->lat = $geocode->getLatitude();
-                $property->long = $geocode->getLongitude();
-            }
-
-            $property->save();
         }
         catch(\Exception $e)
         {

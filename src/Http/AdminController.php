@@ -3,6 +3,7 @@
 namespace CityNexus\CityNexus\Http;
 
 use CityNexus\CityNexus\GeocodeJob;
+use CityNexus\CityNexus\Location;
 use CityNexus\CityNexus\MergeProps;
 use CityNexus\CityNexus\Property;
 use CityNexus\CityNexus\Upload;
@@ -37,8 +38,7 @@ class AdminController extends Controller
 
         $properties = Property::whereNull('lat')->get();
 
-        foreach($properties as $i)
-        {
+        foreach ($properties as $i) {
             $this->dispatch(new GeocodeJob($i->id));
         }
     }
@@ -68,13 +68,10 @@ class AdminController extends Controller
     {
         $this->authorize('citynexus', ['admin', 'delete']);
 
-        if($remove)
-        {
+        if ($remove) {
             Schema::drop($table_name);
             Session::flash('flash_info', "Table Removed");
-        }
-        else
-        {
+        } else {
             DB::table($table_name)->truncate();
             Session::flash('flash_info', "Table Cleared");
         }
@@ -90,15 +87,11 @@ class AdminController extends Controller
 
         $sorted = array();
         $counter = 0;
-        foreach($properties as $i)
-        {
-            if(isset($sorted[trim($i->full_address)]))
-            {
+        foreach ($properties as $i) {
+            if (isset($sorted[trim($i->full_address)])) {
                 Property::find($i->id)->update(['alias_of' => $sorted[trim($i->full_address)]]);
                 $counter++;
-            }
-            else
-            {
+            } else {
                 $sorted[trim($i->full_address)] = $i->id;
             }
         }
@@ -106,6 +99,26 @@ class AdminController extends Controller
         Session::flash('flash_success', $counter . " Properties updated!");
 
         return redirect()->back();
-
     }
+
+
+    public function getMigratePropertiesToLocations()
+    {
+        $properties = Property::whereNull('location_id')->whereNotNull('lat')->get();
+
+        $count = null;
+        foreach($properties as $i)
+        {
+            $new_loc = Location::firstOrCreate(['lat' => $i->lat, 'long' => $i->long]);
+            $new_loc->full_address = $i->house_number . ' ' . $i->street_name . ' ' . $i->street_type;
+            $new_loc->source = "New Property GeoCoding";
+            $new_loc->save();
+            $i->location_id = $new_loc->id;
+            $i->save();
+            $count++;
+        }
+
+        return $count;
+    }
+
 }

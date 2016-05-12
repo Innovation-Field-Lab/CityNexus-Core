@@ -23,7 +23,7 @@ class PackageServiceProvider extends ServiceProvider
         ]);
 
         $this->publishes([
-            __DIR__ . '/Public' => public_path('vendor/citynexus'),
+            __DIR__ . '/assets' => public_path('vendor/citynexus'),
         ], 'public');
 
         $this->publishes([
@@ -54,6 +54,8 @@ class PackageServiceProvider extends ServiceProvider
         include_once __DIR__ . '/models/Note.php';
         include_once __DIR__ . '/models/Table.php';
         include_once __DIR__ . '/models/Upload.php';
+        include_once __DIR__ . '/models/Location.php';
+
 
         // Include jobs
         include_once __DIR__ . '/Jobs/UploadData.php';

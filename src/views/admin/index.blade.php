@@ -18,5 +18,9 @@
 
     <a href="/{{config('citynexus.root_directory')}}/admin/merge-properties" class="btn btn-primary">Merge Properties</a>
 
+    <br>
+    <br>
+    <a href="{{action('\CityNexus\CityNexus\Http\AdminController@getMigratePropertiesToLocations')}}" class="btn btn-primary">Migrate Properties to Locations</a>
+
 
 @stop
