@@ -151,7 +151,7 @@ $section = 'properties';
                 </div>
                 <div class="col-sm-4">
 
-                    @if($property->lat != null && $property->long != null && 'local' != env('APP_ENV'))
+                    @if($property->location->exists() && 'local' != env('APP_ENV'))
                         <div class="panel panel-default">
                                 <div id="pano" style="height: 250px"></div>
                         </div>
@@ -207,21 +207,26 @@ $section = 'properties';
 
 <script src="https://cdnjs.cloudflare.com/ajax/libs/typeahead.js/0.11.1/typeahead.jquery.js"></script>
 
-<script>
-    function initialize() {
-        var point = {lat: {{$property->lat}}, lng:{{$property->long}} };
-        var map = new google.maps.Map(document.getElementById('map'), {
-            center: point,
-            zoom: 16
-        });
-        var panorama = new google.maps.StreetViewPanorama(
-                document.getElementById('pano'), {
-                    position: point,
-                });
-        map.setStreetView(panorama);
-    }
 
-</script>
+@if($property->location->exists())
+    <script>
+        function initialize() {
+            var point = {lat: {{$property->location->lat}}, lng:{{$property->location->long}} };
+            var map = new google.maps.Map(document.getElementById('map'), {
+                center: point,
+                zoom: 16
+            });
+            var panorama = new google.maps.StreetViewPanorama(
+                    document.getElementById('pano'), {
+                        position: point,
+                    });
+            map.setStreetView(panorama);
+        }
+
+    </script>
+@endif
+
+
 <script async defer
         src="{{'https://maps.googleapis.com/maps/api/js?key=' . env('GMAPI_KEY') . '&signed_in=true&callback=initialize'}}">
 </script>

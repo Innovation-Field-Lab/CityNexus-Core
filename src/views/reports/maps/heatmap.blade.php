@@ -17,6 +17,7 @@
                 </a>
                 <ul class="dropdown-menu" role="menu">
                     <li><a href="javascript:void(0);" class="map-bar-toggle">Open Map Settings</a></li>
+                    @can('citynexus', ['reports', 'save'])<li><a onclick="saveReport()" id="save-report" style="cursor: pointer"> Save as Report</a></li>@endcan
                 </ul>
             </div>
             <div id="mapid" style="width: 100%; height: 700px"></div>
@@ -31,10 +32,10 @@
 @endpush
 
     @push('style')
-<link rel="stylesheet" href="/css/leaflet.css"/>
-    <link rel="stylesheet" href="/css/slider.css"/>
+<link rel="stylesheet" href="/vendor/citynexus/css/leaflet.css"/>
+    <link rel="stylesheet" href="/vendor/citynexus/css/slider.css"/>
 <link href='http://fonts.googleapis.com/css?family=Open+Sans|Fjalla+One' rel='stylesheet' type='text/css'>
-<link type="text/css" rel="stylesheet" href="/css/shCoreEclipse.css"/>
+<link type="text/css" rel="stylesheet" href="/vendor/citynexus/css/shCoreEclipse.css"/>
 <!--[if lte IE 8]>
 <link rel="stylesheet" href="/css/leaflet.ie.css" /> -->
 
@@ -71,14 +72,17 @@
 
 @push('js_footer')
 <script src="/vendor/citynexus/js/leaflet.js"></script>
-<script type="text/javascript" src="/js/shCore.js"></script>
-<script type="text/javascript" src="/js/shBrushJScript.js"></script>
+<script type="text/javascript" src="/vendor/citynexus/js/shCore.js"></script>
+<script type="text/javascript" src="/vendor/citynexus/js/shBrushJScript.js"></script>
 
-<script type="text/javascript" src="/js/webgl-heatmap.js"></script>
-<script type="text/javascript" src="/js/webgl-heatmap-leaflet.js"></script>
+<script type="text/javascript" src="/vendor/citynexus/js/webgl-heatmap.js"></script>
+<script type="text/javascript" src="/vendor/citynexus/js/webgl-heatmap-leaflet.js"></script>
 <script src="/vendor/citynexus/plugins/ion-rangeslider/ion.rangeSlider.min.js"></script>
 <script type="text/javascript">
 
+    @if(!isset($key))
+    $('#wrapper').toggleClass('right-bar-enabled');
+    @endif
     // right side-bar toggle
     $('.map-bar-toggle').on('click', function (e) {
 
@@ -112,7 +116,18 @@
 
         @endif
 
-        function refreshMap(table, key)
+        @if(isset($settings->table) && isset($settings->key))
+
+        $.ajax({
+            'url': '{{action('\CityNexus\CityNexus\Http\ReportsController@getHeatMapData')}}/{{$settings->table}}/{{$settings->key}}',
+            'dataType': "json"
+        }).success(function(data){
+            heatmap.setData(data);
+        });
+
+        @endif
+
+    function refreshMap(table, key)
         {
             $.ajax({
                 'url': '{{action('\CityNexus\CityNexus\Http\ReportsController@getHeatMapData')}}/' + table + '/' + key,
@@ -124,7 +139,11 @@
 
         map.addLayer(heatmap);
 
-        $("#intensity").ionRangeSlider({
+        @if(isset($setting->intensity))
+        heatmap.multiply({{$setting->intensity}});
+        @endif
+
+$("#intensity").ionRangeSlider({
             min: 1,
             max: 100,
             from: 50
@@ -133,5 +152,64 @@
             heatmap.multiply(value / 50);
         });
 
+
+function saveReport() {
+    var table_id = $('#h_dataset').val();
+    var key = $('#datafield').val();
+    var intensity = $('#intensity').val();
+
+    console.log(table_id);
+    console.log(key);
+    console.log(intensity);
+
+    var name = prompt('What name would you like to give this report view?', 'Unnamed Report');
+
+    if(name != null)
+    {
+        $.ajax({
+            url: "{{action('\CityNexus\CityNexus\Http\ReportsController@postSaveReport')}}",
+            type: 'post',
+            data: {
+                _token: "{{csrf_token()}}",
+                settings: {
+                    table_id: table_id,
+                    key: key,
+                    intensity: intensity,
+                },
+                name: name
+            }
+        }).success(function (data) {
+            Command: toastr["success"](name, "Report View Saved");
+            $('#save-report').html('Update Saved Report');
+            $('#save-report').setAttribute('onClick', "updateReport(" + data + ")");
+        });
+    }
+
+
+}
+
+    function updateReport( id )
+    {
+        var table_id = $('.h_dataset').val();
+        var key = $('.datafield').val();
+        var intensity = $('#intnsity').val();
+        $.ajax({
+            url: "{{action('\CityNexus\CityNexus\Http\ReportsController@postSaveReport')}}",
+            type: 'post',
+            data: {
+                _token: "{{csrf_token()}}",
+                settings: {
+                    table_id: table_id,
+                    key: key,
+                    intensity: intensity,
+                },
+                id: id
+
+            }
+        }).success(function(){
+            Command: toastr["success"](name, "Report View Updated");
+        });
+
+    }
 </script>
 @endpush

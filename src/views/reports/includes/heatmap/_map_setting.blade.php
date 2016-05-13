@@ -16,10 +16,14 @@
                     <option value="_scores">Existing Scores</option>
                     <option value=""></option>
                     @foreach($datasets as $i)
-                        <option value="{{$i->id}}">{{$i->table_title}}</option>
+                        <option value="{{$i->id}}" @if(isset($table) && $i->table_name == $table) selected @endif>{{$i->table_title}}</option>
                     @endforeach
                 </select>
-                <div id="h_datafields"></div>
+                <div id="h_datafields">
+                    @if(isset($key))
+                        @include('citynexus::reports.includes.heatmap._datafields')
+                    @endif
+                </div>
             </div>
         </div>
 

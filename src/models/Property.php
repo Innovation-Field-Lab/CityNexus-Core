@@ -43,6 +43,6 @@ class Property extends Model
 
     public function location()
     {
-        return $this->hasOne('\CityNexus\CityNexus\Location');
+        return $this->belongsTo('\CityNexus\CityNexus\Location');
     }
 }

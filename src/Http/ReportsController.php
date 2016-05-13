@@ -3,24 +3,14 @@
 namespace CityNexus\CityNexus\Http;
 
 use App\Http\Controllers\Controller;
-use App\User;
-use CityNexus\CityNexus\GeocodeJob;
 use CityNexus\CityNexus\Property;
-use CityNexus\CityNexus\DatasetQuery;
 use CityNexus\CityNexus\GenerateScore;
+use CityNexus\CityNexus\Report;
 use CityNexus\CityNexus\Score;
-use CityNexus\CityNexus\Setting;
 use Illuminate\Http\Request;
-use Illuminate\Support\Facades\Auth;
-use Illuminate\Support\Facades\Mail;
-use Illuminate\Support\Facades\Schema;
-use CityNexus\CityNexus\Table;
-use CityNexus\CityNexus\ScoreBuilder;
 use Illuminate\Support\Facades\DB;
-use Illuminate\Database\Schema\Blueprint;
-use Illuminate\Support\Facades\Queue;
 use CityNexus\CityNexus\Geocode;
-use CityNexus\CityNexus\Tag;
+use CityNexus\CityNexus\Table;
 
 
 class ReportsController extends Controller
@@ -28,7 +18,7 @@ class ReportsController extends Controller
 
     public function getScatterChart()
     {
-        $this->authorize('citynexus', ['group' => 'reports', 'method' => 'create']);
+        $this->authorize('citynexus', ['reports', 'create']);
         $datasets = Table::where('table_title', "!=", 'null')->orderBy('table_name')->get(['table_name', 'table_title', 'id']);
         return view('citynexus::reports.charts.scatter_chart', compact('datasets'));
 
@@ -115,9 +105,12 @@ class ReportsController extends Controller
     public function getHeatMap(Request $request)
     {
         $datasets = Table::whereNotNull('table_title')->orderBy('table_title')->get();
+
         if($request->get('table') && $request->get('key'))
         {
-            return view('citynexus::reports.maps.heatmap', compact('datasets'))
+            $dataset = Table::where('table_name', $request->get('table'))->first();
+            $scheme = \GuzzleHttp\json_decode($dataset->scheme);
+            return view('citynexus::reports.maps.heatmap', compact('datasets', 'dataset', 'scheme'))
                 ->with('table', $request->get('table'))
                 ->with('key', $request->get('key'));
         }
@@ -161,9 +154,9 @@ class ReportsController extends Controller
         $raw_data = DB::table($table)
             ->where( $key, '>', '0')
             ->join('citynexus_properties', 'citynexus_properties.id', '=', 'property_id')
-            ->whereNotNull('citynexus_properties.lat')
-            ->whereNotNull('citynexus_properties.long')
-            ->select('citynexus_properties.lat', 'citynexus_properties.long', $table . '.' . $key)
+            ->join('citynexus_locations', 'citynexus_locations.id', '=', 'citynexus_properties.location_id')
+            ->whereNotNull('citynexus_properties.location_id')
+            ->select('citynexus_locations.lat', 'citynexus_locations.long', $table . '.' . $key)
             ->get();
 
         $max = DB::table($table)
@@ -241,5 +234,29 @@ class ReportsController extends Controller
         }
 
         return $return;
+    }
+
+    public function postSaveReport(Request $request)
+    {
+        if($request->get('id') == null)
+        {
+            if(Report::where('name', $request->get('name'))->count() > 0)
+            {
+                $name = $request->get('name') . ' (' . Report::where('name', $request->get('name'))->count() . ")";
+            }
+            else{
+                $name = $request->get('name');
+            }
+            $report = Report::create(['name' => $name, 'settings' => json_encode($request->get('settings'))]);
+        }
+        else
+        {
+
+            $report = Report::find($request->id);
+            $report->settings = json_encode($request->get('settings'));
+            $report->save();
+        }
+
+        return $report->id;
     }
 }

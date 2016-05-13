@@ -18,7 +18,7 @@
         <option value="">[Select Data Field]</option>
         @foreach($scheme as $i)
             @if($i->type == 'integer' or $i->type == 'float')
-                <option value="{{$i->key}}">{{$i->name}}</option>
+                <option value="{{$i->key}}" @if(isset($key) && $key == $i->key) selected @endif>{{$i->name}}</option>
             @endif
         @endforeach
     </select>
