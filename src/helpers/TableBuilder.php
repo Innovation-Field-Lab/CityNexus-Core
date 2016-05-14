@@ -308,6 +308,7 @@ class TableBuilder
         $record = [];
 
         $data = json_decode($data = DB::table($table->table_name)->where('id', $id)->pluck('raw'));
+        $settings = \GuzzleHttp\json_decode($table->settings);
 
         $tabler = new TableBuilder();
 
@@ -318,7 +319,12 @@ class TableBuilder
         $scheme = json_decode($table->scheme);
 
         //if there is a sync value, identify the index id
-        if( count( $syncValues ) > 0)
+        if(isset($settings->property_id) && $settings->property_id)
+        {
+            dd("hellow");
+            $record[config('citynexus.index_id')] = $data->$settings->property_id;
+        }
+        elseif( count( $syncValues ) > 0)
         {
             $record[config('citynexus.index_id')] = $this->findSyncId( config('citynexus.index_table'), $data, $syncValues );
         }
@@ -331,8 +337,8 @@ class TableBuilder
             $record = $this->processElements($scheme, $record);
             $record = $this->checkForUsedKeys($record, $table);
 
-            if (isset($table->timestamp) && $table->timestamp != null) {
-                $record['created_at'] = $record[$table->timestamp];
+            if (isset($settings->timestamp) && $settings->timestamp != null) {
+                $record['created_at'] = $record[$settings->timestamp];
             }
 
             try{
@@ -371,18 +377,15 @@ class TableBuilder
      */
     private function checkForUsedKeys($records, $table)
     {
-        $keys = ['id', 'property_id', 'upload_id', 'updated_at', 'raw'];
+        $settings = \GuzzleHttp\json_decode($table->settings);
+
+        $keys = ['id', 'property_id', 'upload_id', 'updated_at', 'raw', 'created_at'];
         foreach($keys as $i) {
-            if(isset($record[$i])) {
+            if(isset($settings->$i) && $settings->$i == null | isset($settings->$i) && $settings->$i != $i)
+                if(isset($record[$i])) {
                 $record[$i . '-original'] = $record[$i];
                 unset($record[$i]);
             }
-        }
-
-        if(isset($record['created_at'])) {
-            if($table->timestamp == null | $table->timestamp == 'created_at')
-            $record['created_at-original'] = $record['created_at'];
-            unset($record['created_at']);
         }
 
         return $records;

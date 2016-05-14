@@ -121,4 +121,24 @@ class AdminController extends Controller
         return $count;
     }
 
+    public function getMigrateTimeStamps()
+    {
+
+        $count = 0;
+        $tables = Table::whereNotNull('timestamp')->get();
+        foreach($tables as $i)
+        {
+            $i->settings = json_encode(['timestamp' => $i->timestamp]);
+
+            $i->save();
+            $count++;
+        }
+
+            Schema::table('tabler_tables', function(Blueprint $table){
+            $table->dropColumn('timestamp');
+        });
+
+        return $count;
+    }
+
 }

@@ -92,7 +92,7 @@ class TablerController extends Controller
         $table->table_title = $request->get('table_name');
         $table->table_name = $tabler->create($table);
         $table->table_description = $request->get('table_description');
-        $table->timestamp = $request->get('timestamp');
+        $table->settings = json_encode($request->get('settings'));
         $table->save();
 
         $upload = Upload::create(['table_id' => $table->id, 'note' => 'Initial Upload']);
@@ -181,6 +181,7 @@ class TablerController extends Controller
             $table->table_title = $request->get('table_title');
             $table->table_description = $request->get('table_description');
             $table->scheme = json_encode($request->get('map'));
+            $table->settings = json_encode($request->get('settings'));
 
             $table->save();
         }
@@ -213,6 +214,9 @@ class TablerController extends Controller
     {
         $now = Carbon::now();
 
+        $settings = \GuzzleHttp\json_decode($table->settings);
+
+
         if(!Schema::hasColumn($table->table_name, 'raw'))
         {
             Schema::table($table->table_name, function (Blueprint $table) {
@@ -223,9 +227,21 @@ class TablerController extends Controller
         try
         {
             $upload = null;
+            $existing = DB::table($table->table_name)->lists('id');
             foreach($data as $i)
             {
-                $upload[] = ['raw' => json_encode($i), 'processed_at' => $now, 'upload_id' => $upload_id, 'created_at' => $now, 'updated_at' => $now];
+                if(isset($settings->unique_id) && $settings->unique_id != null)
+                {
+                    if(!isset($existing[$i->id]))
+                    {
+
+                        $upload[] = ['raw' => json_encode($i), 'processed_at' => $now, 'upload_id' => $upload_id, 'created_at' => $now, 'updated_at' => $now];
+                        $existing[$i->id] = $i->id;
+                    }
+                }
+                else{
+                    $upload[] = ['raw' => json_encode($i), 'processed_at' => $now, 'upload_id' => $upload_id, 'created_at' => $now, 'updated_at' => $now];
+                }
             }
 
             DB::table($table->table_name)->insert($upload);
@@ -233,7 +249,9 @@ class TablerController extends Controller
 
             foreach($new_ids as $record)
             {
+
                 $this->dispatch(new ProcessData($record, $table));
+
             }
 
         }

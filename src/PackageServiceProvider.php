@@ -85,7 +85,6 @@ class PackageServiceProvider extends ServiceProvider
             __DIR__.'/Public' => public_path('vendor/citynexus'),
         ], 'public');
 
-
     }
 
     /**
@@ -96,9 +95,6 @@ class PackageServiceProvider extends ServiceProvider
     public function provides()
     {
         return [
-            \Toin0u\Geocoder\GeocoderServiceProvider::class,
-            \Maatwebsite\Excel\ExcelServiceProvider::class,
-            \BackupManager\Laravel\Laravel5ServiceProvider::class,
         ];
     }
 }

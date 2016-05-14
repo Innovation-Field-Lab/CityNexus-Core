@@ -7,10 +7,11 @@ class Table extends Model {
 
     use SoftDeletes;
     protected $table =  'tabler_tables';
-    protected $fillable = ['table_name', 'table_title', 'table_description', 'scheme', 'raw_upload'];
+    protected $fillable = ['table_name', 'table_title', 'table_description', 'scheme', 'raw_upload', 'settings'];
 
     public function uploads()
     {
         return $this->hasMany('CityNexus\CityNexus\Upload');
     }
+
 }
