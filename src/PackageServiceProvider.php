@@ -95,6 +95,10 @@ class PackageServiceProvider extends ServiceProvider
      */
     public function provides()
     {
-        return [];
+        return [
+            \Toin0u\Geocoder\GeocoderServiceProvider::class,
+            \Maatwebsite\Excel\ExcelServiceProvider::class,
+            \BackupManager\Laravel\Laravel5ServiceProvider::class,
+        ];
     }
 }
