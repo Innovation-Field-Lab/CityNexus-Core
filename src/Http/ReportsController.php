@@ -16,6 +16,26 @@ use CityNexus\CityNexus\Table;
 class ReportsController extends Controller
 {
 
+    public function getIndex()
+    {
+        $this->authorize('citynexus', ['reports', 'view']);
+
+        $reports = Report::orderBy('name')->get();
+
+        return view('citynexus::reports.index', compact('reports'));
+    }
+
+    public function getShow( $id )
+    {
+        $report = Report::find( $id );
+        $settings = \GuzzleHttp\json_decode($report->settings);
+
+        if($settings->type == 'Heat Map') {
+            $table = Table::find($settings->table_id);
+            return redirect(action('\CityNexus\CityNexus\Http\ReportsController@getHeatMap', ['table' => $table->table_name, 'key' => $settings->key]));
+                }
+    }
+
     public function getScatterChart()
     {
         $this->authorize('citynexus', ['reports', 'create']);
@@ -110,7 +130,7 @@ class ReportsController extends Controller
         {
             $dataset = Table::where('table_name', $request->get('table'))->first();
             $scheme = \GuzzleHttp\json_decode($dataset->scheme);
-            return view('citynexus::reports.maps.heatmap', compact('datasets', 'dataset', 'scheme'))
+            return view('citynexus::reports.maps.map', compact('datasets', 'dataset', 'scheme'))
                 ->with('table', $request->get('table'))
                 ->with('key', $request->get('key'));
         }

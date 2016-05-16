@@ -172,6 +172,7 @@ function saveReport() {
             data: {
                 _token: "{{csrf_token()}}",
                 settings: {
+                    type: 'Heat Map',
                     table_id: table_id,
                     key: key,
                     intensity: intensity,
@@ -199,6 +200,7 @@ function saveReport() {
             data: {
                 _token: "{{csrf_token()}}",
                 settings: {
+                    type: 'Heat Map',
                     table_id: table_id,
                     key: key,
                     intensity: intensity,
