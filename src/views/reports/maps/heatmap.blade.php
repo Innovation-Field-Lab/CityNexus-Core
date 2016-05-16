@@ -17,7 +17,13 @@
                 </a>
                 <ul class="dropdown-menu" role="menu">
                     <li><a href="javascript:void(0);" class="map-bar-toggle">Open Map Settings</a></li>
-                    @can('citynexus', ['reports', 'save'])<li><a onclick="saveReport()" id="save-report" style="cursor: pointer"> Save as Report</a></li>@endcan
+                    @can('citynexus', ['reports', 'save'])
+                        @if(isset($report_id))
+                        <li><a onclick="saveReport()" id="save-report" style="cursor: pointer"> Save as Report</a></li>
+                            @else
+                            <li><a onclick="updateReport({{$report_id}})" id="save-report" style="cursor: pointer"> Save Report Updates</a></li>
+                            @endif
+                    @endcan
                 </ul>
             </div>
             <div id="mapid" style="width: 100%; height: 700px"></div>

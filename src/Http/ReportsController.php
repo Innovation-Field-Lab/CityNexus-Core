@@ -32,7 +32,7 @@ class ReportsController extends Controller
 
         if($settings->type == 'Heat Map') {
             $table = Table::find($settings->table_id);
-            return redirect(action('\CityNexus\CityNexus\Http\ReportsController@getHeatMap', ['table' => $table->table_name, 'key' => $settings->key]));
+            return redirect(action('\CityNexus\CityNexus\Http\ReportsController@getHeatMap') . "?table=" . $table->table_name . "&key=" . $settings->key . '&report_id=' . $id);
                 }
     }
 
@@ -130,7 +130,11 @@ class ReportsController extends Controller
         {
             $dataset = Table::where('table_name', $request->get('table'))->first();
             $scheme = \GuzzleHttp\json_decode($dataset->scheme);
-            return view('citynexus::reports.maps.map', compact('datasets', 'dataset', 'scheme'))
+            $report_id = null;
+                if($request->get('report_id') != null) {
+                    $report_id = $request->get('report_id');
+                }
+            return view('citynexus::reports.maps.heatmap', compact('datasets', 'dataset', 'scheme', 'report_id'))
                 ->with('table', $request->get('table'))
                 ->with('key', $request->get('key'));
         }
@@ -277,6 +281,6 @@ class ReportsController extends Controller
             $report->save();
         }
 
-        return $report->id;
+        return '';
     }
 }
