@@ -281,6 +281,6 @@ class ReportsController extends Controller
             $report->save();
         }
 
-        return '';
+        return '<a onclick="updateReport(' . $report->id . ')" id="save-report" style="cursor: pointer"> Save Report Updates</a>';
     }
 }

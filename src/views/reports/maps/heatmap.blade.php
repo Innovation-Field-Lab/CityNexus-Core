@@ -18,8 +18,8 @@
                 <ul class="dropdown-menu" role="menu">
                     <li><a href="javascript:void(0);" class="map-bar-toggle">Open Map Settings</a></li>
                     @can('citynexus', ['reports', 'save'])
-                        @if(isset($report_id))
-                        <li><a onclick="saveReport()" id="save-report" style="cursor: pointer"> Save as Report</a></li>
+                        @if(!isset($report_id))
+                        <li id="save-report-line"><a onclick="saveReport()" id="save-report" style="cursor: pointer"> Save as Report</a></li>
                             @else
                             <li><a onclick="updateReport({{$report_id}})" id="save-report" style="cursor: pointer"> Save Report Updates</a></li>
                             @endif
@@ -145,28 +145,25 @@
 
         map.addLayer(heatmap);
 
-        @if(isset($setting->intensity))
-        heatmap.multiply({{$setting->intensity}});
-        @endif
 
 $("#intensity").ionRangeSlider({
             min: 1,
             max: 100,
-            from: 50
+            from: @if(isset($settings->intensity)) {{$settings->intensity}} @else 50 @endif
         }).on('change', function (ev) {
             var value = $('#intensity').val();
             heatmap.multiply(value / 50);
         });
+
+    @if(isset($setting->intensity))
+     heatmap.multiply({{$setting->intensity/50}});
+    @endif
 
 
 function saveReport() {
     var table_id = $('#h_dataset').val();
     var key = $('#datafield').val();
     var intensity = $('#intensity').val();
-
-    console.log(table_id);
-    console.log(key);
-    console.log(intensity);
 
     var name = prompt('What name would you like to give this report view?', 'Unnamed Report');
 
@@ -187,8 +184,7 @@ function saveReport() {
             }
         }).success(function (data) {
             Command: toastr["success"](name, "Report View Saved");
-            $('#save-report').html('Update Saved Report');
-            $('#save-report').setAttribute('onClick', "updateReport(" + data + ")");
+            $('#save-report-line').html( data );
         });
     }
 
@@ -197,9 +193,9 @@ function saveReport() {
 
     function updateReport( id )
     {
-        var table_id = $('.h_dataset').val();
-        var key = $('.datafield').val();
-        var intensity = $('#intnsity').val();
+        var table_id = $('#h_dataset').val();
+        var key = $('#datafield').val();
+        var intensity = $('#intensity').val();
         $.ajax({
             url: "{{action('\CityNexus\CityNexus\Http\ReportsController@postSaveReport')}}",
             type: 'post',

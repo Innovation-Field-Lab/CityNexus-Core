@@ -138,7 +138,6 @@ $section = 'reports';
         })
     });
 </script>
-    <script type="text/javascript" src="https://cdnjs.cloudflare.com/ajax/libs/d3/3.5.16/d3.min.js"></script>
     <script>
 
         function drawChart(hTable, hKey, vTable, vKey){
