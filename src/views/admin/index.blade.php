@@ -26,9 +26,6 @@
     <a href="{{action('\CityNexus\CityNexus\Http\AdminController@getMigrateTimeStamps')}}" class="btn btn-primary">Migrate Timestamps</a>
     <br>
     <br>
-    <a href="{{action('\CityNexus\CityNexus\Http\AdminController@getBackupDatabase')}}" class="btn btn-primary">Backup Database</a>
-    <br>
-    <br>
 
     <div class="list-group">
         @foreach(\CityNexus\CityNexus\Table::whereNull('raw_upload')->get() as $i)
