@@ -15,7 +15,7 @@
                     </div>
                     <input type="file" name="file">
                     <br>
-                    <input type="submit" value="Upload" class="btn btn-primary">
+                    <input type="submit" value="Upload" id="upload" class="btn btn-primary">
                 </form>
             </div>
         </div>

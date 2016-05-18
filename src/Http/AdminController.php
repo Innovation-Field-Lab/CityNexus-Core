@@ -2,14 +2,17 @@
 
 namespace CityNexus\CityNexus\Http;
 
+use Carbon\Carbon;
 use CityNexus\CityNexus\GeocodeJob;
 use CityNexus\CityNexus\Location;
 use CityNexus\CityNexus\MergeProps;
 use CityNexus\CityNexus\Property;
 use CityNexus\CityNexus\Upload;
+use Illuminate\Console\Scheduling\Schedule;
 use Illuminate\Database\Schema\Blueprint;
 use Illuminate\Support\Facades\Artisan;
 use Illuminate\Support\Facades\DB;
+use Illuminate\Support\Facades\Redirect;
 use Illuminate\Support\Facades\Schema;
 use Illuminate\Support\Facades\Session;
 use Mockery\CountValidator\Exception;
@@ -139,6 +142,46 @@ class AdminController extends Controller
         });
 
         return $count;
+    }
+
+    public function getCreateRawRows($table_name)
+    {
+        if(!Schema::hasColumn($table_name, 'raw'))
+        {
+            Schema::table($table_name, function(Blueprint $table)
+            {
+                $table->json('raw')->nullable();
+            });
+        }
+
+        $all = DB::table($table_name)->count();
+        $data = DB::table($table_name)->whereNull('raw')->get();
+        $edited = 0;
+        foreach($data as $i)
+        {
+            DB::table($table_name)->where('id', $i->id)->update(['raw' => json_encode($i)]);
+            $edited++;
+        }
+
+        $message = $edited . ' out of ' . $all . ' records edited';
+
+        $settings = \GuzzleHttp\json_decode(DB::table('tabler_tables')->where('table_name', $table_name)->pluck('settings'), true);
+        $settings['raw_migrated'] = true;
+
+        DB::table('tabler_tables')->where('table_name', $table_name)->update(['settings' => json_encode($settings)]);
+
+        Session::flash('flash_success', $message);
+
+        return redirect()->back();
+    }
+
+    protected function schedule(Schedule $schedule)
+    {
+        $date = Carbon::now()->toW3cString();
+        $environment = env('APP_ENV');
+        $schedule->command(
+            "db:backup --database=mysql --destination=s3 --destinationPath=/{$environment}/projectname_{$environment}_{$date} --compression=gzip"
+        )->weekly();
     }
 
 }

@@ -32,7 +32,7 @@ class ReportsController extends Controller
 
         if($settings->type == 'Heat Map') {
             $table = Table::find($settings->table_id);
-            return redirect(action('\CityNexus\CityNexus\Http\ReportsController@getHeatMap') . "?table=" . $table->table_name . "&key=" . $settings->key . '&report_id=' . $id);
+            return redirect(action('\CityNexus\CityNexus\Http\ReportsController@getHeatMap') . "?table=" . $settings->table_name . "&key=" . $settings->key . '&report_id=' . $id);
                 }
     }
 
@@ -124,10 +124,19 @@ class ReportsController extends Controller
 
     public function getHeatMap(Request $request)
     {
+        $this->authorize('citynexus', ['reports', 'view']);
+
         $datasets = Table::whereNotNull('table_title')->orderBy('table_title')->get();
 
         if($request->get('table') && $request->get('key'))
         {
+            if(fnmatch('citynexus_scores_*', $request->get('table')))
+            {
+                $scores = Score::whereNotNull('name')->orderBy('name')->get(['id', 'name']);
+                return view('citynexus::reports.maps.heatmap', compact('datasets', 'scores', 'report_id'))
+                    ->with('table', $request->get('table'))
+                    ->with('key', $request->get('key'));
+            }
             $dataset = Table::where('table_name', $request->get('table'))->first();
             $scheme = \GuzzleHttp\json_decode($dataset->scheme);
             $report_id = null;

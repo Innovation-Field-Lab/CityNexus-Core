@@ -30,17 +30,17 @@ class TablerController extends Controller
 
         if(isset($_GET['trashed']))
         {
-            $tables = Table::withTrashed()->get();
+            $tables = Table::withTrashed()->sortBy('table_name')->get();
         }
         else{
-            $tables = Table::all();
+            $tables = Table::all()->sortBy('table_name');
         }
 
         return view('citynexus::tabler.index', compact('tables'));
     }
     public function getUploader()
     {
-        $this->authorize('citynexus', ['group' => 'datasets', 'method' => 'uploads']);
+        $this->authorize('citynexus', ['datasets', 'upload']);
 
         return view('citynexus::tabler.uploader');
     }
@@ -161,8 +161,11 @@ class TablerController extends Controller
         {
             return redirect('/' . config('citynexus.tabler_root') . '/create-scheme/' . $id);
         }
+
         $scheme = json_decode($table->scheme);
-        return view('citynexus::tabler.edit', compact('table', 'scheme'));
+        $settings = json_decode($table->settings);
+
+        return view('citynexus::tabler.edit', compact('table', 'scheme', 'settings'));
     }
 
     public function postUpdateTable($id, Request $request)

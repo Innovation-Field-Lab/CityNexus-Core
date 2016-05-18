@@ -162,6 +162,7 @@ $("#intensity").ionRangeSlider({
 
 function saveReport() {
     var table_id = $('#h_dataset').val();
+        var table_name = $('#table_name').val();
     var key = $('#datafield').val();
     var intensity = $('#intensity').val();
 
@@ -176,6 +177,7 @@ function saveReport() {
                 _token: "{{csrf_token()}}",
                 settings: {
                     type: 'Heat Map',
+                    table_name: table_name,
                     table_id: table_id,
                     key: key,
                     intensity: intensity,
@@ -195,6 +197,7 @@ function saveReport() {
     {
         var table_id = $('#h_dataset').val();
         var key = $('#datafield').val();
+        var table_name = $('#table_name').val();
         var intensity = $('#intensity').val();
         $.ajax({
             url: "{{action('\CityNexus\CityNexus\Http\ReportsController@postSaveReport')}}",
@@ -203,6 +206,7 @@ function saveReport() {
                 _token: "{{csrf_token()}}",
                 settings: {
                     type: 'Heat Map',
+                    table_name: table_name,
                     table_id: table_id,
                     key: key,
                     intensity: intensity,

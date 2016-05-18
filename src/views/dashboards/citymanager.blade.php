@@ -410,7 +410,7 @@ $section = 'dashboard';
 
 @stop
 
-@push('javascript')
+@push('js_footer')
 
 <script src="/vendor/citynexus/plugins/jquery-knob/jquery.knob.js"></script>
 
