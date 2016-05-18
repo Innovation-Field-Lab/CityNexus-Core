@@ -129,6 +129,15 @@ class AdminController extends Controller
 
         $count = 0;
         $tables = Table::whereNotNull('timestamp')->get();
+
+        if(!Schema::hasColumn('tabler_tables', 'settings'))
+        {
+            Schema::table('tabler_tables', function(Blueprint $table)
+            {
+               $table->json('settings')->nullable();
+            });
+        }
+        
         foreach($tables as $i)
         {
             $i->settings = json_encode(['timestamp' => $i->timestamp]);
