@@ -192,7 +192,7 @@
             })
 </script>
 
-@include('citynexus::includes._alerts')
+@include('citynexus::master.includes._alerts')
 
 @stack('js_footer')
 

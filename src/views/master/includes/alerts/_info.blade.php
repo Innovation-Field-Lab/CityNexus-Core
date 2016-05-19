@@ -1,1 +1,0 @@
-@include('citynexus::master.includes.alerts._alert', ['class' => "info"])

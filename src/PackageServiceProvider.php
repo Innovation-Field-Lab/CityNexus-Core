@@ -23,7 +23,7 @@ class PackageServiceProvider extends ServiceProvider
         ]);
 
         $this->publishes([
-            __DIR__ . '/assets' => public_path('vendor/citynexus'),
+            __DIR__ . '/Public' => public_path('vendor/citynexus'),
         ], 'public');
 
         $this->publishes([
