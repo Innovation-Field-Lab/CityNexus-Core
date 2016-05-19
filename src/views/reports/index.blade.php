@@ -26,7 +26,7 @@ $section = 'reports';
                 @foreach($reports as $item)
                     <tr>
                         <td>{{$item->name}}</td>
-                        <td>{{json_decode($item->settings)->type}}</td>
+                        <td>{{$item->setting->type}}</td>
                         <td>{{$item->updated_at->diffForHumans()}}</td>
                         <td><a class="btn btn-primary" href="{{action('\CityNexus\CityNexus\Http\ReportsController@getShow', ['id' => $item->id])}}">View</a></td>
                     </tr>

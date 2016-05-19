@@ -19,25 +19,28 @@ class ReportsController extends Controller
     public function getIndex()
     {
         $this->authorize('citynexus', ['reports', 'view']);
-
         $reports = Report::orderBy('name')->get();
-
         return view('citynexus::reports.index', compact('reports'));
     }
 
     public function getShow( $id )
     {
         $report = Report::find( $id );
-        $settings = \GuzzleHttp\json_decode($report->settings);
 
-        if($settings->type == 'Heat Map') {
-            $table = Table::find($settings->table_id);
-            return redirect(action('\CityNexus\CityNexus\Http\ReportsController@getHeatMap') . "?table=" . $settings->table_name . "&key=" . $settings->key . '&report_id=' . $id);
-                }
-        elseif($settings->type == 'Distribution')
-        {
-            return redirect(action('\CityNexus\CityNexus\Http\ReportsController@getDistributionCurve', ['table' => $settings->table_name, "key" => $settings->key]) . '?report_id=' . $id);
+        switch($report->setting->type) {
+            case 'Heat Map':
+                $table = Table::find($report->setting->table_id);
+                return redirect(action('\CityNexus\CityNexus\Http\ReportsController@getHeatMap') . "?table=" . $report->setting->table_name . "&key=" . $report->setting->key . '&report_id=' . $id);
+                break;
+
+            case 'Distribution':
+                return redirect(action('\CityNexus\CityNexus\Http\ReportsController@getDistributionCurve', ['table' => $report->setting->table_name, "key" => $report->setting->key]) . '?report_id=' . $id);
+                break;
+
+            default:
+                abort(404);
         }
+
     }
 
     public function getScatterChart()

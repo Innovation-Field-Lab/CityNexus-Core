@@ -9,18 +9,20 @@ $section = 'reports';
 
     <div class="col-sm-9 ">
         <div class="card-box">
-            {{--<div class="dropdown pull-right">--}}
-                {{--<a href="#" class="dropdown-toggle card-drop" data-toggle="dropdown" aria-expanded="false">--}}
-                    {{--<i class="zmdi zmdi-more-vert"></i>--}}
-                {{--</a>--}}
-                {{--<ul class="dropdown-menu" role="menu">--}}
-                    {{--<li><a href="#">Action</a></li>--}}
-                    {{--<li><a href="#">Another action</a></li>--}}
-                    {{--<li><a href="#">Something else here</a></li>--}}
-                    {{--<li class="divider"></li>--}}
-                    {{--<li><a href="#">Separated link</a></li>--}}
-                {{--</ul>--}}
-            {{--</div>--}}
+            <div class="dropdown pull-right">
+                <a href="#" class="dropdown-toggle card-drop" data-toggle="dropdown" aria-expanded="false">
+                    <i class="zmdi zmdi-more-vert"></i>
+                </a>
+                <ul class="dropdown-menu" role="menu">
+                    @can('citynexus', ['reports', 'save'])
+                    @if(!isset($report_id))
+                        <li id="save-report-line"><a onclick="saveReport()" id="save-report" style="cursor: pointer"> Save as Report</a></li>
+                    @else
+                        <li><a onclick="updateReport({{$report_id}})" id="save-report" style="cursor: pointer"> Save Report Updates</a></li>
+                    @endif
+                    @endcan
+                </ul>
+            </div>
 
             <h4 class="header-title m-t-0 m-b-30">Line Scatter Diagram</h4>
             <div id="chart-wrapper">
@@ -118,10 +120,8 @@ $section = 'reports';
 
 
 @push('js_footer')
-
-<script src="https://cdnjs.cloudflare.com/ajax/libs/d3/3.5.16/d3.min.js"></script>
-
-<script>
+        <script type="text/javascript" src="https://mbostock.github.com/d3/d3.v2.js"></script>
+        <script>
     $('.dataset').change(function( event ){
         var selectId = event.currentTarget.id;
         if(selectId == 'v_dataset') var axis = 'v';
@@ -145,10 +145,9 @@ $section = 'reports';
 
             var dataSet = scatterChart = d3.json("{{action('\CityNexus\CityNexus\Http\ReportsController@getScatterDataSet')}}/" + hTable + '/' + hKey + '/' + vTable + '/' + vKey, function (dataSet) {
             console.log(dataSet);
+
             // call the method below
             showScatterPlot(dataSet);
-
-
 
             function showScatterPlot(data) {
                 // just to have some space around items.
@@ -264,6 +263,77 @@ $section = 'reports';
                 showScatterPlot(dataSet);
             })
             });
+        }
+
+
+        function saveReport() {
+
+            var v_table = $('#v_dataset').val();
+            var h_table = $('#h_dataset').val();
+            var v_key = $('#v_datafield').val();
+            var h_key = $('#h_datafield').val();
+
+            if(v_key != null && h_key != null)
+            {
+                var name = prompt('What name would you like to give this report view?', 'Unnamed Report');
+            }
+            else
+            {
+                Command: toastr["warning"]("Uh oh! You must select both a vertical and horizontal varible before saving.")
+            }
+
+            if(name != null)
+            {
+
+                $.ajax({
+                    url: "{{action('\CityNexus\CityNexus\Http\ReportsController@postSaveReport')}}",
+                    type: 'post',
+                    data: {
+                        _token: "{{csrf_token()}}",
+                        settings: {
+                            type: 'Scatter Chart',
+                            v_table: v_table,
+                            h_table: h_table,
+                            v_key: v_key,
+                            h_key: h_key
+                        },
+                        name: name
+                    }
+                }).success(function (data) {
+                    Command: toastr["success"](name, "Report View Saved");
+                    $('#save-report-line').html( data );
+                });
+            }
+
+
+        }
+
+        function updateReport( id )
+        {
+            var v_table = $('#v_dataset').val();
+            var h_table = $('#h_dataset').val();
+            var v_key = $('#v_datafield').val();
+            var h_key = $('#h_datafield').val();
+
+            $.ajax({
+                url: "{{action('\CityNexus\CityNexus\Http\ReportsController@postSaveReport')}}",
+                type: 'post',
+                data: {
+                    _token: "{{csrf_token()}}",
+                    settings: {
+                        type: 'Scatter Chart',
+                        v_table: v_table,
+                        h_table: h_table,
+                        v_key: v_key,
+                        h_key: h_key,
+                    },
+                    id: id
+
+                }
+            }).success(function(){
+                Command: toastr["success"](name, "Report View Updated");
+            });
+
         }
 
 

@@ -47,7 +47,7 @@ class TableBuilder
 
     public function cleanName($name)
     {
-        return strtolower(str_replace(' ', '_', (preg_replace('/[^a-zA-Z0-9_ -%][().][\/]/s[\']', '', $name))));
+        return strtolower(str_replace(' ', '_', (preg_replace('/[^a-zA-Z0-9_ -%][().\'][\/]/s', '', $name))));
     }
 
 
