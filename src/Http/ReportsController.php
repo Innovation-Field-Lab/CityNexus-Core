@@ -116,7 +116,7 @@ class ReportsController extends Controller
             $key_name = $schema->$key->name;
             $table_name = $table_ob->table_title;
 
-            return view('citynexus::reports.charts.distribution_curve', compact('data', 'stats','table_name', 'key_name'));
+            return view('citynexus::reports.charts.distribution_curve', compact('data', 'stats','table_name', 'key_name', 'table', 'key'));
         }
 
         else{

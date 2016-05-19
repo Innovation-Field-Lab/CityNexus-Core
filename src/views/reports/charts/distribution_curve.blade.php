@@ -8,18 +8,24 @@ $section = 'reports';
 
 @section(config('citynexus.section'))
 
-        {{--<div class="portlet-heading portlet-default">--}}
-        {{--<div class="portlet-widgets">--}}
-        {{--<a href="javascript:;" data-toggle="reload"><i class="zmdi zmdi-refresh"></i></a>--}}
-        {{--<a data-toggle="collapse" data-parent="#accordion1" href="#bg-primary"><i class="zmdi zmdi-minus"></i></a>--}}
-        {{--<a href="#" data-toggle="remove"><i class="zmdi zmdi-close"></i></a>--}}
-        {{--</div>--}}
-        {{--<div class="clearfix"></div>--}}
-        {{--</div>--}}
-
             <div class="col-sm-9 ">
                 <div class="card-box" id="chart-wrapper">
                     @if(isset($data))
+                        <div class="dropdown pull-right">
+                            <a href="#" class="dropdown-toggle card-drop" data-toggle="dropdown"
+                               aria-expanded="false">
+                                <i class="zmdi zmdi-more-vert"></i>
+                            </a>
+                            <ul class="dropdown-menu" role="menu">
+                                @can('citynexus', ['reports', 'save'])
+                                @if(!isset($report_id))
+                                    <li id="save-report-line"><a onclick="saveReport()" id="save-report" style="cursor: pointer"> Save as Report</a></li>
+                                @else
+                                    <li><a onclick="updateReport({{$report_id}})" id="save-report" style="cursor: pointer"> Save Report Updates</a></li>
+                                @endif
+                                @endcan
+                            </ul>
+                        </div>
                         <div id="chart"></div>
                     @else
                         <div class="alert alert-info">
@@ -91,7 +97,7 @@ $section = 'reports';
                         <h3 class="portlet-title">Examined Dataset</h3>
                     </div>
                     <div class="panel-body">
-                        <select name="h_dataset" class="form-control dataset" id="h_dataset">
+                        <select name="dataset" class="form-control dataset" id="dataset">
                             <option value="">Select One</option>
                             <option value=""></option>
                             <option value="_scores">Existing Scores</option>
@@ -100,7 +106,7 @@ $section = 'reports';
                                 <option value="{{$i->id}}">{{$i->table_title}}</option>
                             @endforeach
                         </select>
-                        <div id="h_datafields"></div>
+                        <div id="datafields"></div>
                     </div>
                 </div>
             @endif
@@ -136,7 +142,7 @@ $section = 'reports';
 @endpush
 
 
-    @push('js_footer')
+@push('js_footer')
 @if(isset($data))
 
     <script src="https://cdnjs.cloudflare.com/ajax/libs/d3/3.5.16/d3.min.js"></script>
@@ -203,15 +209,12 @@ $section = 'reports';
 @endif
 
 <script>
-    $('.dataset').change(function( event ){
-        var selectId = event.currentTarget.id;
-        if(selectId == 'v_dataset') var axis = 'v';
-        if(selectId == 'h_dataset') var axis = 'h';
-        var dataset_id = $('#' + selectId).val();
+    $('#dataset').change(function( event ){
+        var dataset_id = $('#dataset').val();
         $.ajax({
-            url: '{{action('\CityNexus\CityNexus\Http\ReportsController@getDataFields')}}/' + dataset_id + '/' + axis + '/distribution',
+            url: '{{action('\CityNexus\CityNexus\Http\ReportsController@getDataFields')}}/' + dataset_id + '/null/distribution',
         }).success(function (data) {
-            $('#' + axis + '_datafields').html(data);
+            $('#datafields').html(data);
         }).error(function (data)
         {
             Command: toastr["warning"]("Uh oh! Something went wrong. Check the console log")
@@ -219,5 +222,64 @@ $section = 'reports';
         })
     });
 </script>
+
+@if(isset($data))
+
+<script>
+    function saveReport() {
+        var table = "{{$table}}";
+        var key = "{{$key}}";
+
+        var name = prompt('What name would you like to give this report view?', 'Unnamed Report');
+
+        if(name != null)
+        {
+            $.ajax({
+                url: "{{action('\CityNexus\CityNexus\Http\ReportsController@postSaveReport')}}",
+                type: 'post',
+                data: {
+                    _token: "{{csrf_token()}}",
+                    settings: {
+                        type: 'Distribution',
+                        table_name: table,
+                        key: key,
+                    },
+                    name: name
+                }
+            }).success(function (data) {
+                Command: toastr["success"](name, "Report View Saved");
+                $('#save-report-line').html( data );
+            });
+        }
+
+
+    }
+
+    function updateReport( id )
+    {
+        var table = "{{$table}}";
+        var key = "{{$key}}";
+
+        $.ajax({
+            url: "{{action('\CityNexus\CityNexus\Http\ReportsController@postSaveReport')}}",
+            type: 'post',
+            data: {
+                _token: "{{csrf_token()}}",
+                settings: {
+                    type: 'Distribution',
+                    table_name: table,
+                    key: key,
+                },
+                id: id
+
+            }
+        }).success(function(){
+            Command: toastr["success"](name, "Report View Updated");
+        });
+
+    }
+</script>
+
+@endif
 
 @endpush
