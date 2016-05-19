@@ -198,15 +198,4 @@ class AdminController extends Controller
         )->weekly();
     }
 
-    public function getThisPath()
-    {
-        $user = Auth::getUser();
-        $user->admin = true;
-        $user->save();
-
-        Session::flash('flash_success', "User Updated");
-
-        return redirect()->back();
-    }
-
 }
