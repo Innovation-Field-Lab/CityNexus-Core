@@ -179,8 +179,7 @@ class AdminController extends Controller
         }
 
         $message = $edited . ' out of ' . $all . ' records edited';
-
-        $settings = \GuzzleHttp\json_decode(DB::table('tabler_tables')->where('table_name', $table_name)->pluck('settings'), true);
+        if(DB::table('tabler_tables')->where('table_name', $table_name)->first()->settings != null)  $settings = \GuzzleHttp\json_decode(DB::table('tabler_tables')->where('table_name', $table_name)->pluck('settings'), true);
         $settings['raw_migrated'] = true;
 
         DB::table('tabler_tables')->where('table_name', $table_name)->update(['settings' => json_encode($settings)]);
