@@ -123,7 +123,7 @@ class AdminController extends Controller
             $count++;
         }
 
-        Session::flash('flash_success', $count . ' properties geocoded.');
+        Session::flash('flash_success', $count . ' converted to locations.');
 
         return redirect()->back();
     }

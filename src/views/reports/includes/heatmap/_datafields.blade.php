@@ -4,7 +4,7 @@
     <select id="table_name" class="form-control" id="datafield">
         <option value="">[Select Score]</option>
         @foreach($scores as $i)
-            <option value="citynexus_scores_{{$i->id}}" @if('citynexus_scores_' . $i->id == $table) selected @endif>{{$i->name}}</option>
+            <option value="citynexus_scores_{{$i->id}}" @if(isset($table) && 'citynexus_scores_' . $i->id == $table) selected @endif>{{$i->name}}</option>
         @endforeach
     </select>
     <input type='hidden' id="datafield" value="score">

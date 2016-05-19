@@ -167,7 +167,6 @@ class ReportsController extends Controller
             if($type != null)
             {
                 return view('citynexus::reports.includes.' .  $type . '._datafields', compact('scores', 'scheme'));
-
             }
 
             return view('citynexus::reports.includes.scatter._datafields', compact('scores', 'axis'));
