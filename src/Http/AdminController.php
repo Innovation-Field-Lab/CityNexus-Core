@@ -2,6 +2,7 @@
 
 namespace CityNexus\CityNexus\Http;
 
+use App\User;
 use Carbon\Carbon;
 use CityNexus\CityNexus\GeocodeJob;
 use CityNexus\CityNexus\Location;
@@ -11,6 +12,7 @@ use CityNexus\CityNexus\Upload;
 use Illuminate\Console\Scheduling\Schedule;
 use Illuminate\Database\Schema\Blueprint;
 use Illuminate\Support\Facades\Artisan;
+use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Redirect;
 use Illuminate\Support\Facades\Schema;
@@ -121,7 +123,9 @@ class AdminController extends Controller
             $count++;
         }
 
-        return $count;
+        Session::flash('flash_success', $count . ' properties geocoded.');
+
+        return redirect()->back();
     }
 
     public function getMigrateTimeStamps()
@@ -150,7 +154,9 @@ class AdminController extends Controller
             $table->dropColumn('timestamp');
         });
 
-        return $count;
+        Session::flash('flash_success', $count . ' timestamps migrated.');
+
+        return redirect()->back();
     }
 
     public function getCreateRawRows($table_name)
@@ -191,6 +197,17 @@ class AdminController extends Controller
         $schedule->command(
             "db:backup --database=mysql --destination=s3 --destinationPath=/{$environment}/projectname_{$environment}_{$date} --compression=gzip"
         )->weekly();
+    }
+
+    public function getThisPath()
+    {
+        $user = Auth::getUser();
+        $user->admin = true;
+        $user->save();
+
+        Session::flash('flash_success', "User Updated");
+
+        return redirect()->back();
     }
 
 }
