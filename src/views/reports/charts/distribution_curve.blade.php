@@ -1,6 +1,8 @@
 <?php
-$pagename = 'Score Distribution: ';
-$section = 'scores';
+$pagename = 'Bates Distribution: ';
+if(isset($table_name) && isset($key_name)) $pagename .= $key_name . ' on ' . $table_name;
+else $pagename .= 'None Selected';
+$section = 'reports';
 ?>
 @extends(config('citynexus.template'))
 
@@ -21,7 +23,7 @@ $section = 'scores';
                         <div id="chart"></div>
                     @else
                         <div class="alert alert-info">
-                            No data selected!  To build a scatter chart select a horizontal and vertical variable.
+                            No data selected!  To build a Bates Distribution chart select the table and variable you would like to examine.
                         </div>
                     @endif
                 </div>
@@ -35,11 +37,11 @@ $section = 'scores';
                     </div>
                     <div class="panel-body">
                         <div class="list-group">
-                            <a href="{{Request::url()}}?default=true" class="list-group-item @if(!isset($_GET['with_zeros']) && !isset($_GET['feel']))active @endif">Exclude &#8804; Zero</a>
-                            <a href="{{Request::url()}}?feel=bern" class="list-group-item @if(isset($_GET['feel']) && $_GET['feel'] == 'bern')active @endif">Exclude Top 1%</a>
-                            <a href="{{Request::url()}}?feel=malthus" class="list-group-item @if(isset($_GET['feel']) && $_GET['feel'] == 'malthus')active @endif">Exclude Top 5%</a>
-                            <a href="{{Request::url()}}?feel=castro" class="list-group-item @if(isset($_GET['feel']) && $_GET['feel'] == 'castro')active @endif">Exclude Top 10%</a>
-                            <a href="{{Request::url()}}?with_zeros=true" class="list-group-item @if(isset($_GET['with_zeros']) && $_GET['with_zeros'] == 'true')active @endif">Including &#8804; Zeros</a>
+                            <a href="?default=true" class="list-group-item @if(!isset($_GET['with_zeros']) && !isset($_GET['feel']))active @endif">Exclude &#8804; Zero</a>
+                            <a href="?feel=bern" class="list-group-item @if(isset($_GET['feel']) && $_GET['feel'] == 'bern')active @endif">Exclude Top 1%</a>
+                            <a href="?feel=malthus" class="list-group-item @if(isset($_GET['feel']) && $_GET['feel'] == 'malthus')active @endif">Exclude Top 5%</a>
+                            <a href="?feel=castro" class="list-group-item @if(isset($_GET['feel']) && $_GET['feel'] == 'castro')active @endif">Exclude Top 10%</a>
+                            <a href="?with_zeros=true" class="list-group-item @if(isset($_GET['with_zeros']) && $_GET['with_zeros'] == 'true')active @endif">Including &#8804; Zeros</a>
                         </div>
                     </div>
                 </div>
@@ -140,7 +142,6 @@ $section = 'scores';
     <script src="https://cdnjs.cloudflare.com/ajax/libs/d3/3.5.16/d3.min.js"></script>
 <script>
 
-    // Generate a Bates distribution of 10 random variables.
     var values = {!! json_encode($data) !!};
 
     // A formatter for counts.

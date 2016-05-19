@@ -137,7 +137,7 @@ class AdminController extends Controller
                $table->json('settings')->nullable();
             });
         }
-        
+
         foreach($tables as $i)
         {
             $i->settings = json_encode(['timestamp' => $i->timestamp]);

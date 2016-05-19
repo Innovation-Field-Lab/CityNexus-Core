@@ -111,8 +111,12 @@ class ReportsController extends Controller
             'zeros' => $zeros,
 
         ];
+            $table_ob = Table::where('table_name', $table)->first();
+            $schema = \GuzzleHttp\json_decode($table_ob->scheme);
+            $key_name = $schema->$key->name;
+            $table_name = $table_ob->table_title;
 
-            return view('citynexus::reports.charts.distribution_curve', compact('data', 'stats'));
+            return view('citynexus::reports.charts.distribution_curve', compact('data', 'stats','table_name', 'key_name'));
         }
 
         else{
