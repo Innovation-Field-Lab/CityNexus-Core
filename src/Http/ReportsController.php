@@ -34,6 +34,10 @@ class ReportsController extends Controller
             $table = Table::find($settings->table_id);
             return redirect(action('\CityNexus\CityNexus\Http\ReportsController@getHeatMap') . "?table=" . $settings->table_name . "&key=" . $settings->key . '&report_id=' . $id);
                 }
+        elseif($settings->type == 'Distribution')
+        {
+            return redirect(action('\CityNexus\CityNexus\Http\ReportsController@getHeatMap', ['table' => $settings->table_name, "key" => $settings->key]) . '?report_id=' . $id);
+        }
     }
 
     public function getScatterChart()
