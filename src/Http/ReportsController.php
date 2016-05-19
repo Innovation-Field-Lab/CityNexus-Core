@@ -36,7 +36,7 @@ class ReportsController extends Controller
                 }
         elseif($settings->type == 'Distribution')
         {
-            return redirect(action('\CityNexus\CityNexus\Http\ReportsController@getHeatMap', ['table' => $settings->table_name, "key" => $settings->key]) . '?report_id=' . $id);
+            return redirect(action('\CityNexus\CityNexus\Http\ReportsController@getDistributionCurve', ['table' => $settings->table_name, "key" => $settings->key]) . '?report_id=' . $id);
         }
     }
 
