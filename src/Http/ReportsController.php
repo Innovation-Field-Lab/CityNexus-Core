@@ -236,12 +236,13 @@ class ReportsController extends Controller
                 $return[] = [
                     'address' => $properties[$k],
                     'property_id' => $k,
-                    'x' => $i,
-                    'y' => $vertical[$k]];
+                    'x' => floatval($i),
+                    'y' => floatval($vertical[$k])
+                ];
             }
         }
 
-        return $return;
+        return array_slice($return, 0, 100);
 
     }
 
