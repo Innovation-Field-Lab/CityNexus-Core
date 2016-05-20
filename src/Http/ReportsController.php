@@ -242,7 +242,9 @@ class ReportsController extends Controller
             }
         }
 
-        return array_slice($return, 0, 100);
+        if(count($return) > 0) return $return;
+
+        else return false;
 
     }
 

@@ -31,12 +31,8 @@ class CitynexusController extends Controller
     public function getIndex()
     {
         $today = new Carbon();
-        $notes = Note::orderBy('created_at')->take(20)->get();
-        $pcount = Property::whereNull('alias_of')->count();
-        $npcount = Property::whereNull('alias_of')->where('created_at', '>', $today->subMonth(1))->count();
-        $tcount = Table::all()->count();
-
-        return view('citynexus::dashboards.citymanager', compact('notes', 'pcount', 'tcount', 'npcount'));
+        $notes = Note::orderBy('created_at', "DEC")->take(20)->get();
+        return view('citynexus::dashboards.citymanager', compact('notes'));
     }
 
     public function getProperty($id)

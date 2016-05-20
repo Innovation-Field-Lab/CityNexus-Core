@@ -324,6 +324,7 @@ $section = 'properties';
                 }
             }).success( function( data ) {
                 $("#pending").addClass('hidden');
+                $('#new-tag-input').val(null);
                 $('#property_tags').append(data);
             }
         );
