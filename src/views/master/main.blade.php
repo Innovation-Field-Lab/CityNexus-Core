@@ -38,8 +38,15 @@
 
 </div>
 <!-- END wrapper -->
-
-
+<!-- Modal -->
+<div id="help-modal" class="modal-demo">
+    <button type="button" class="close" onclick="Custombox.close();">
+        <span>&times;</span><span class="sr-only">Close</span>
+    </button>
+    <h4 class="custom-modal-title">Modal title</h4>
+    <div id="help-modal-text" class="custom-modal-text">
+    </div>
+</div>
 
 <script>
     var resizefunc = [];
@@ -60,6 +67,9 @@
 <script src="/vendor/citynexus/js/jquery.core.js"></script>
 <script src="/vendor/citynexus/js/jquery.app.js"></script>
 <script src="/vendor/citynexus/plugins/toastr/toastr.min.js"></script>
+<!-- Modal-Effect -->
+<script src="/vendor/citynexus/plugins/custombox/dist/custombox.min.js"></script>
+<script src="/vendor/citynexus/plugins/custombox/dist/legacy.min.js"></script>
 
 
     <script type="text/javascript">
@@ -190,6 +200,22 @@
                     toastr.clear();
                 });
             })
+</script>
+
+<script>
+    function getHelp( help )
+    {
+        $.ajax({
+            url: "{{action("\CityNexus\CityNexus\Http\HelpController@getItem")}}/" + help
+        }).success(function (data){
+            $("#help-modal").html(data);
+            Custombox.open({
+                target: '#help-modal',
+                effect: 'fadein'
+            });
+        })
+
+    }
 </script>
 
 @include('citynexus::master.includes._alerts')

@@ -9,4 +9,8 @@ class Report extends Model
     protected $table = 'citynexus_reports';
     protected $fillable = ['name', 'settings', 'access'];
 
+    public function getSettingAttribute()
+    {
+        return json_decode($this->settings);
+    }
 }

@@ -14,4 +14,14 @@ class Table extends Model {
         return $this->hasMany('CityNexus\CityNexus\Upload');
     }
 
+    public function getSettingAttribute()
+    {
+        return json_decode($this->settings);
+    }
+
+    public function getSchemaAttribute()
+    {
+        return json_decode($this->scheme);
+    }
+
 }

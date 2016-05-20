@@ -65,11 +65,13 @@
                         <thead>
                         <td>Ignore</td>
                         <td>Visible</td>
-                        <td>Field Name</td>
-                        <td>Key</td>
-                        <td>First Value</td>
+                        <td>Field Name
+                            <i class="ti-help" style="cursor: pointer" onclick="getHelp('tabler.uploader.fieldname')" ></i>
+                        </td>
                         <td>Field Type</td>
-                        <td>Sync</td>
+                        <td>Sync
+                            <i class="ti-help" style="cursor: pointer" onclick="getHelp('tabler.uploader.sync')" ></i>
+                        </td>
                         <td>Push</td>
                         </thead>
                         <tbody>

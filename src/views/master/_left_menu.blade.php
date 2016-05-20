@@ -74,7 +74,7 @@
                 <li class="has_sub">
                     <a href="javascript:void(0);" class="waves-effect @if(isset($section) && $section == 'reports') active @endif "><i class="fa fa-area-chart"></i> <span> Reports </span> <span class="menu-arrow"></span></a>
                     <ul class="list-unstyled">
-                        <li><a href="{{action('\CityNexus\CityNexus\Http\RiskScoreController@getIndex')}}">Saved Reports</a></li>
+                        <li><a href="{{action('\CityNexus\CityNexus\Http\ReportsController@getIndex')}}">Saved Reports</a></li>
                         <li role="separator" class="divider"></li>
                         <li class="@if(isset($pagename) &&  $pagename == 'Scatter Chart') active @endif"><a href="{{action('\CityNexus\CityNexus\Http\ReportsController@getScatterChart')}}">Scatter Chart Builder</a></li>
                         <li class="@if(isset($pagename) &&  $pagename == 'Distribution Curve') active @endif"><a href="{{action('\CityNexus\CityNexus\Http\ReportsController@getDistributionCurve')}}">Distribution Curve Builder</a></li>
