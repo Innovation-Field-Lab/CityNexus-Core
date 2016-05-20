@@ -19,4 +19,9 @@ class Table extends Model {
         return json_decode($this->settings);
     }
 
+    public function getSchemaAttribute()
+    {
+        return json_decode($this->scheme);
+    }
+
 }

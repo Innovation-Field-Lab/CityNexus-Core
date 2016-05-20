@@ -73,24 +73,24 @@ class ReportsController extends Controller
         $count = count($data);
 
         if ($request->get('feel') != null) {
-            if ($request->get('feel') == 'bern') {
-                $bern = $count - ($count / 100);
-                $bern = intval($bern);
-                $cutoff = $data[$bern];
+            $feel = $request->get('feel');
+            switch($feel){
+                case 'bern':
+                    $bern = $count - ($count / 100);
+                    $bern = intval($bern);
+                    $cutoff = $data[$bern];
+                    break;
+                case 'malthus':
+                    $malthus = $count - ($count / 20);
+                    $malthus = intval($malthus);
+                    $cutoff = $data[$malthus];
+                    break;
+                case 'castro':
+                    $castro = $count - ($count / 10);
+                    $castro = intval($castro);
+                    $cutoff = $data[$castro];
+                    break;
             }
-
-            if ($request->get('feel') == 'malthus') {
-                $malthus = $count - ($count / 20);
-                $malthus = intval($malthus);
-                $cutoff = $data[$malthus];
-            }
-
-            if ($request->get('feel') == 'castro') {
-                $castro = $count - ($count / 10);
-                $castro = intval($castro);
-                $cutoff = $data[$castro];
-            }
-
             $data = DB::table($table)->where($key, '<', $cutoff)->where($key, '>', 0)->orderBy($key)->lists($key);
             $min = DB::table($table)->where($key, '<', $cutoff)->where($key, '>', 0)->min($key);
             $max = $cutoff;
@@ -149,7 +149,7 @@ class ReportsController extends Controller
                     ->with('key', $request->get('key'));
             }
             $dataset = Table::where('table_name', $request->get('table'))->first();
-            $scheme = \GuzzleHttp\json_decode($dataset->scheme);
+            $scheme = $dataset->schema;
             $report_id = null;
                 if($request->get('report_id') != null) {
                     $report_id = $request->get('report_id');
@@ -181,7 +181,7 @@ class ReportsController extends Controller
         }
         $dataset = Table::find($id);
 
-        $scheme = json_decode($dataset->scheme);
+        $scheme = $dataset->schema;
 
         if($type != null)
         {
