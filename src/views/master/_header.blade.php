@@ -22,6 +22,8 @@
     <link href="/vendor/citynexus/css/menu.css" rel="stylesheet" type="text/css" />
     <link href="/vendor/citynexus/css/responsive.css" rel="stylesheet" type="text/css" />
     <link href="/vendor/citynexus/plugins/toastr/toastr.min.css" rel="stylesheet" type="text/css" />
+    <link href="/vendor/citynexus/plugins/custombox/dist/custombox.min.css" rel="stylesheet">
+
 
     @stack('style')
 

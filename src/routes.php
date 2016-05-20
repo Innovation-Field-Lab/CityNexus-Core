@@ -13,6 +13,7 @@
 
 Route::controller("api-query", '\CityNexus\CityNexus\Http\APIController');
 
+Route::controller("/citynexus/help", '\CityNexus\CityNexus\Http\HelpController');
 
 Route::get('/activate-account/', function()
 {
