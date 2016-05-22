@@ -15,10 +15,10 @@ $section = 'reports';
                 </a>
                 <ul class="dropdown-menu" role="menu">
                     @can('citynexus', ['reports', 'save'])
-                    @if(!isset($report_id))
-                        <li id="save-report-line"><a onclick="saveReport()" id="save-report" style="cursor: pointer"> Save as Report</a></li>
+                    @if(!isset($view_id))
+                        <li id="save-view-line"><a onclick="saveView()" id="save-view" style="cursor: pointer"> Save as Report View</a></li>
                     @else
-                        <li><a onclick="updateReport({{$report_id}})" id="save-report" style="cursor: pointer"> Save Report Updates</a></li>
+                        <li><a onclick="updateView({{$view_id}})" id="save-view" style="cursor: pointer"> Save Report View Updates</a></li>
                     @endif
                     @endcan
                 </ul>
@@ -34,7 +34,7 @@ $section = 'reports';
             </div>
         </div>
     </div>
-    <form action="{{action('\CityNexus\CityNexus\Http\ReportsController@getScatterChart')}}">
+    <form action="{{action('\CityNexus\CityNexus\Http\ViewController@getScatterChart')}}">
 
         <div class="col-sm-3">
 
@@ -128,7 +128,7 @@ $section = 'reports';
                 if(selectId == 'h_dataset') var axis = 'h';
                 var dataset_id = $('#' + selectId).val();
                 $.ajax({
-                    url: '{{action('\CityNexus\CityNexus\Http\ReportsController@getDataFields')}}/' + dataset_id + '/' + axis,
+                    url: '{{action('\CityNexus\CityNexus\Http\ViewController@getDataFields')}}/' + dataset_id + '/' + axis,
                 }).success(function (data) {
                     $('#' + axis + '_datafields').html(data);
                 }).error(function (data)
@@ -141,7 +141,7 @@ $section = 'reports';
         <script>
             function drawChart(hTable, hKey, vTable, vKey){
                 $('#chart').html('<div class="fa fa-spinner fa-spin"></div>');
-                var dataSet = scatterChart = d3.json("{{action('\CityNexus\CityNexus\Http\ReportsController@getScatterDataSet')}}/" + hTable + '/' + hKey + '/' + vTable + '/' + vKey, function (dataSet) {
+                var dataSet = scatterChart = d3.json("{{action('\CityNexus\CityNexus\Http\ViewController@getScatterDataSet')}}/" + hTable + '/' + hKey + '/' + vTable + '/' + vKey, function (dataSet) {
                     console.log(dataSet);
                     // call the method below
                     showScatterPlot(dataSet);
@@ -229,7 +229,7 @@ $section = 'reports';
                                             .style("top", (d3.event.pageY - 25) + "px");
                                 })
                                 .on("click", function(d){
-                                    var win = window.open("{{action('\CityNexus\CityNexus\Http\CitynexusController@getProperty')}}/" + d.property_id , '_blank');
+                                    var win = window.open("{{action('\CityNexus\CityNexus\Http\PropertyController@getShow')}}/" + d.property_id , '_blank');
                                     win.focus();
                                 })
                                 .on("mouseout", function(d) {
@@ -240,17 +240,21 @@ $section = 'reports';
                     }
                     $(window).resize(function(){
                         showScatterPlot(dataSet);
-                    })
+                    }).error(fucntion(data)
+                    {
+                        $('#chart').html('<div class="fa fa-alert"></div>');
+                        Command: toastr["warning"](name, "Uh oh. Something went wrong.");
+                    };
                 });
             }
-            function saveReport() {
+            function saveView() {
                 var v_table = $('#v_dataset').val();
                 var h_table = $('#h_dataset').val();
                 var v_key = $('#v_datafield').val();
                 var h_key = $('#h_datafield').val();
                 if(v_key != null && h_key != null)
                 {
-                    var name = prompt('What name would you like to give this report view?', 'Unnamed Report');
+                    var name = prompt('What name would you like to give this report view?', 'Unnamed View');
                 }
                 else
                 {
@@ -259,7 +263,7 @@ $section = 'reports';
                 if(name != null)
                 {
                     $.ajax({
-                        url: "{{action('\CityNexus\CityNexus\Http\ReportsController@postSaveReport')}}",
+                        url: "{{action('\CityNexus\CityNexus\Http\ViewController@postSaveView')}}",
                         type: 'post',
                         data: {
                             _token: "{{csrf_token()}}",
@@ -274,18 +278,18 @@ $section = 'reports';
                         }
                     }).success(function (data) {
                         Command: toastr["success"](name, "Report View Saved");
-                        $('#save-report-line').html( data );
+                        $('#save-view-line').html( data );
                     });
                 }
             }
-            function updateReport( id )
+            function updateView( id )
             {
                 var v_table = $('#v_dataset').val();
                 var h_table = $('#h_dataset').val();
                 var v_key = $('#v_datafield').val();
                 var h_key = $('#h_datafield').val();
                 $.ajax({
-                    url: "{{action('\CityNexus\CityNexus\Http\ReportsController@postSaveReport')}}",
+                    url: "{{action('\CityNexus\CityNexus\Http\ViewController@postSaveView')}}",
                     type: 'post',
                     data: {
                         _token: "{{csrf_token()}}",
@@ -302,6 +306,10 @@ $section = 'reports';
                     Command: toastr["success"](name, "Report View Updated");
                 });
             }
+
+            @if(isset($settings))
+            drawChart('{{$settings->h_table}}', '{{$settings->h_key}}', '{{$settings->v_table}}', '{{$settings->v_key}}');
+            @endif
         </script>
 
     @endpush

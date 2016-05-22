@@ -1,5 +1,5 @@
 <?php
-$pagename = 'Reports';
+$pagename = 'Report Views';
 $section = 'reports';
 ?>
 
@@ -23,12 +23,12 @@ $section = 'reports';
                 </tr>
                 </thead>
                 <tbody>
-                @foreach($reports as $item)
+                @foreach($views as $item)
                     <tr>
                         <td>{{$item->name}}</td>
                         <td>{{$item->setting->type}}</td>
                         <td>{{$item->updated_at->diffForHumans()}}</td>
-                        <td><a class="btn btn-primary" href="{{action('\CityNexus\CityNexus\Http\ReportsController@getShow', ['id' => $item->id])}}">View</a></td>
+                        <td><a class="btn btn-primary" href="{{action('\CityNexus\CityNexus\Http\ViewController@getShow', ['id' => $item->id])}}">Visit</a></td>
                     </tr>
                 @endforeach
                 </tbody>
