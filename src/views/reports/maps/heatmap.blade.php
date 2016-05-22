@@ -114,7 +114,7 @@
         @if(isset($table) && isset($key))
 
         $.ajax({
-            'url': '{{action('\CityNexus\CityNexus\Http\ReportsController@getHeatMapData')}}/{{$table}}/{{$key}}',
+            'url': '{{action('\CityNexus\CityNexus\Http\ViewController@getHeatMapData')}}/{{$table}}/{{$key}}',
             'dataType': "json"
         }).success(function(data){
             heatmap.setData(data);
@@ -125,7 +125,7 @@
         @if(isset($settings->table) && isset($settings->key))
 
         $.ajax({
-            'url': '{{action('\CityNexus\CityNexus\Http\ReportsController@getHeatMapData')}}/{{$settings->table}}/{{$settings->key}}',
+            'url': '{{action('\CityNexus\CityNexus\Http\ViewController@getHeatMapData')}}/{{$settings->table}}/{{$settings->key}}',
             'dataType': "json"
         }).success(function(data){
             heatmap.setData(data);
@@ -136,7 +136,7 @@
     function refreshMap(table, key)
         {
             $.ajax({
-                'url': '{{action('\CityNexus\CityNexus\Http\ReportsController@getHeatMapData')}}/' + table + '/' + key,
+                'url': '{{action('\CityNexus\CityNexus\Http\ViewController@getHeatMapData')}}/' + table + '/' + key,
                 'dataType': "json"
             }).success(function(data){
                 heatmap.setData(data);
@@ -171,7 +171,7 @@ function saveReport() {
     if(name != null)
     {
         $.ajax({
-            url: "{{action('\CityNexus\CityNexus\Http\ReportsController@postSaveReport')}}",
+            url: "{{action('\CityNexus\CityNexus\Http\ViewController@postSaveView')}}",
             type: 'post',
             data: {
                 _token: "{{csrf_token()}}",
@@ -200,7 +200,7 @@ function saveReport() {
         var table_name = $('#table_name').val();
         var intensity = $('#intensity').val();
         $.ajax({
-            url: "{{action('\CityNexus\CityNexus\Http\ReportsController@postSaveReport')}}",
+            url: "{{action('\CityNexus\CityNexus\Http\ViewController@postSaveView')}}",
             type: 'post',
             data: {
                 _token: "{{csrf_token()}}",

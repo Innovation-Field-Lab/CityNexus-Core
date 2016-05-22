@@ -42,7 +42,7 @@
         if(selectId == 'h_dataset') var axis = 'h';
         var dataset_id = $('#' + selectId).val();
         $.ajax({
-            url: '{{action('\CityNexus\CityNexus\Http\ReportsController@getDataFields')}}/' + dataset_id + '/' + axis + '/heatmap',
+            url: '{{action('\CityNexus\CityNexus\Http\ViewController@getDataFields')}}/' + dataset_id + '/' + axis + '/heatmap',
         }).success(function (data) {
             $('#' + axis + '_datafields').html(data);
         }).error(function (data)

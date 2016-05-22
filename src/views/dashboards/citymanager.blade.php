@@ -295,7 +295,7 @@ $section = 'dashboard';
 
                 <div class="inbox-widget nicescroll" style="height: 315px;">
                     @foreach($notes as $i)
-                    <a href="{{action('\CityNexus\CityNexus\Http\CitynexusController@getProperty', [$i->property_id])}}#note-{{$i->id}}">
+                    <a href="{{action('\CityNexus\CityNexus\Http\PropertyController@getShow', [$i->property_id])}}#note-{{$i->id}}">
                         <div class="inbox-item">
                             {{--<div class="inbox-item-img"><img src="/images/users/avatar-1.jpg" class="img-circle" alt=""></div>--}}
                             <p class="inbox-item-author">By {{ucwords($i->property->full_address)}}</p>

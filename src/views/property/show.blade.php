@@ -315,7 +315,7 @@ $section = 'properties';
             $('#no-tags').addClass('hidden');
             $('#pending').removeClass('hidden');
             $.ajax({
-                url: "/{{config('citynexus.root_directory')}}/associate-tag",
+                url: "{{action('\CityNexus\CityNexus\Http\PropertyController@getAssociateTag')}}",
                 type: 'post',
                 data: {
                     _token: "{{csrf_token()}}",
@@ -347,7 +347,7 @@ $section = 'properties';
     {
         $('#tag-' + id).addClass('hidden');
         $.ajax({
-            url: "/{{config('citynexus.root_directory')}}/remove-tag",
+            url: "{{action('\CityNexus\CityNexus\Http\PropertyController@getRemoveTag')}}",
             type: "post",
             data: {
                 _token: "{{csrf_token()}}",

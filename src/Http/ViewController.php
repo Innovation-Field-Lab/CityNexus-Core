@@ -7,35 +7,37 @@ use CityNexus\CityNexus\Property;
 use CityNexus\CityNexus\GenerateScore;
 use CityNexus\CityNexus\Report;
 use CityNexus\CityNexus\Score;
+use CityNexus\CityNexus\View;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\DB;
 use CityNexus\CityNexus\Geocode;
 use CityNexus\CityNexus\Table;
 
 
-class ReportsController extends Controller
+class ViewController extends Controller
 {
 
     public function getIndex()
     {
         $this->authorize('citynexus', ['reports', 'view']);
-        $reports = Report::orderBy('name')->get();
-        return view('citynexus::reports.index', compact('reports'));
+        $views = View::orderBy('name')->get();
+        return view('citynexus::reports.views.index', compact('views'));
     }
 
     public function getShow( $id )
     {
-        $report = Report::find( $id );
+        $view = View::find( $id );
 
-        switch($report->setting->type) {
+        switch($view->setting->type) {
             case 'Heat Map':
-                $table = Table::find($report->setting->table_id);
-                return redirect(action('\CityNexus\CityNexus\Http\ReportsController@getHeatMap') . "?table=" . $report->setting->table_name . "&key=" . $report->setting->key . '&report_id=' . $id);
+                $table = Table::find($view->setting->table_id);
+                return redirect(action('\CityNexus\CityNexus\Http\ViewController@getHeatMap') . "?table=" . $view->setting->table_name . "&key=" . $view->setting->key . '&view_id=' . $id);
                 break;
-
             case 'Distribution':
-                return redirect(action('\CityNexus\CityNexus\Http\ReportsController@getDistributionCurve', ['table' => $report->setting->table_name, "key" => $report->setting->key]) . '?report_id=' . $id);
+                return redirect(action('\CityNexus\CityNexus\Http\ViewController@getDistribution', ['table' => $view->setting->table_name, "key" => $view->setting->key]) . '?view_id=' . $id);
                 break;
+            case 'Scatter Chart':
+                return redirect(action('\CityNexus\CityNexus\Http\ViewController@getScatterChart', ['view_id' => $id]));
 
             default:
                 abort(404);
@@ -43,17 +45,22 @@ class ReportsController extends Controller
 
     }
 
-    public function getScatterChart()
+    public function getScatterChart($view_id = null)
     {
-        $this->authorize('citynexus', ['reports', 'create']);
+        $this->authorize('citynexus', ['reports', 'view']);
         $datasets = Table::where('table_title', "!=", 'null')->orderBy('table_name')->get(['table_name', 'table_title', 'id']);
+        if($view_id != null)
+        {
+            $settings = View::find($view_id)->setting;
+            return view('citynexus::reports.charts.scatter_chart', compact('datasets', 'settings'));
+        }
         return view('citynexus::reports.charts.scatter_chart', compact('datasets'));
 
     }
 
-    public function getDistributionCurve($table = null, $key = null, Request $request = null)
+    public function getDistribution($table = null, $key = null, Request $request = null)
     {
-        $this->authorize('citynexus', ['reports', 'create']);
+        $this->authorize('citynexus', ['reports', 'view']);
 
         $datasets = Table::where('table_title', "!=", 'null')->orderBy('table_name')->get(['table_name', 'table_title', 'id']);
 
@@ -62,66 +69,74 @@ class ReportsController extends Controller
 
             $max = DB::table($table)->max($key);
 
-        if ($request->get('with_zeros')) {
-            $data = DB::table($table)->orderBy($key)->lists($key);
-            $min = DB::table($table)->min($key);
-        } else {
-            $data = DB::table($table)->where($key, '>', 0)->orderBy($key)->lists($key);
-            $min = DB::table($table)->where($key, '>', 0)->min($key);
-        }
-        // Bern view
-        $count = count($data);
-
-        if ($request->get('feel') != null) {
-            $feel = $request->get('feel');
-            switch($feel){
-                case 'bern':
-                    $bern = $count - ($count / 100);
-                    $bern = intval($bern);
-                    $cutoff = $data[$bern];
-                    break;
-                case 'malthus':
-                    $malthus = $count - ($count / 20);
-                    $malthus = intval($malthus);
-                    $cutoff = $data[$malthus];
-                    break;
-                case 'castro':
-                    $castro = $count - ($count / 10);
-                    $castro = intval($castro);
-                    $cutoff = $data[$castro];
-                    break;
+            if ($request->get('with_zeros')) {
+                $data = DB::table($table)->orderBy($key)->lists($key);
+                $min = DB::table($table)->min($key);
+            } else {
+                $data = DB::table($table)->where($key, '>', 0)->orderBy($key)->lists($key);
+                $min = DB::table($table)->where($key, '>', 0)->min($key);
             }
-            $data = DB::table($table)->where($key, '<', $cutoff)->where($key, '>', 0)->orderBy($key)->lists($key);
-            $min = DB::table($table)->where($key, '<', $cutoff)->where($key, '>', 0)->min($key);
-            $max = $cutoff;
+            // Bern view
             $count = count($data);
-        }
 
-        $zeros = DB::table($table)->where($key, '<=', '0')->count();
-        $sum = DB::table($table)->sum($key);
-        $middle = $count / 2;
-        $firstQ = $count / 4;
-        $thirdQ = $middle + $firstQ;
-        $bTen = $count / 10;
-        $tTen = $count - $bTen;
+            if ($request->get('feel') != null) {
+                $feel = $request->get('feel');
+                switch($feel){
+                    case 'bern':
+                        $bern = $count - ($count / 100);
+                        $bern = intval($bern);
+                        $cutoff = $data[$bern];
+                        break;
+                    case 'malthus':
+                        $malthus = $count - ($count / 20);
+                        $malthus = intval($malthus);
+                        $cutoff = $data[$malthus];
+                        break;
+                    case 'castro':
+                        $castro = $count - ($count / 10);
+                        $castro = intval($castro);
+                        $cutoff = $data[$castro];
+                        break;
+                }
+                $data = DB::table($table)->where($key, '<', $cutoff)->where($key, '>', 0)->orderBy($key)->lists($key);
+                $min = DB::table($table)->where($key, '<', $cutoff)->where($key, '>', 0)->min($key);
+                $max = $cutoff;
+                $count = count($data);
+            }
 
-        $stats = [
-            'max' => $max,
-            'min' => $min,
-            'count' => $count,
-            'mean' => $sum / $count,
-            'bTen' => $bTen,
-            'firstQ' => $firstQ,
-            'median' => $middle,
-            'thirdQ' => $thirdQ,
-            'tTen' => $tTen,
-            'zeros' => $zeros,
+            $zeros = DB::table($table)->where($key, '<=', '0')->count();
+            $sum = DB::table($table)->sum($key);
+            $middle = $count / 2;
+            $firstQ = $count / 4;
+            $thirdQ = $middle + $firstQ;
+            $bTen = $count / 10;
+            $tTen = $count - $bTen;
 
-        ];
-            $table_ob = Table::where('table_name', $table)->first();
-            $schema = \GuzzleHttp\json_decode($table_ob->scheme);
-            $key_name = $schema->$key->name;
-            $table_name = $table_ob->table_title;
+            $stats = [
+                'max' => $max,
+                'min' => $min,
+                'count' => $count,
+                'mean' => $sum / $count,
+                'bTen' => $bTen,
+                'firstQ' => $firstQ,
+                'median' => $middle,
+                'thirdQ' => $thirdQ,
+                'tTen' => $tTen,
+                'zeros' => $zeros,
+
+            ];
+
+            if(substr($table, 0, 17) == 'citynexus_scores_')
+            {
+                $key_name = $key;
+                $table_name = $table;
+            }
+            else {
+                $table_ob = Table::where('table_name', $table)->first();
+                $schema = $table_ob->schema;
+                $key_name = $schema->$key->name;
+                $table_name = $table_ob->table_name;
+            }
 
             return view('citynexus::reports.charts.distribution_curve', compact('data', 'stats','table_name', 'key_name', 'table', 'key'));
         }
@@ -144,17 +159,17 @@ class ReportsController extends Controller
             if(fnmatch('citynexus_scores_*', $request->get('table')))
             {
                 $scores = Score::whereNotNull('name')->orderBy('name')->get(['id', 'name']);
-                return view('citynexus::reports.maps.heatmap', compact('datasets', 'scores', 'report_id'))
+                return view('citynexus::reports.maps.heatmap', compact('datasets', 'scores', 'view_id'))
                     ->with('table', $request->get('table'))
                     ->with('key', $request->get('key'));
             }
             $dataset = Table::where('table_name', $request->get('table'))->first();
             $scheme = $dataset->schema;
-            $report_id = null;
-                if($request->get('report_id') != null) {
-                    $report_id = $request->get('report_id');
-                }
-            return view('citynexus::reports.maps.heatmap', compact('datasets', 'dataset', 'scheme', 'report_id'))
+            $view_id = null;
+            if($request->get('view_id') != null) {
+                $viewt_id = $request->get('view_id');
+            }
+            return view('citynexus::reports.maps.heatmap', compact('datasets', 'dataset', 'scheme', 'view_id'))
                 ->with('table', $request->get('table'))
                 ->with('key', $request->get('key'));
         }
@@ -282,27 +297,27 @@ class ReportsController extends Controller
         return $return;
     }
 
-    public function postSaveReport(Request $request)
+    public function postSaveView(Request $request)
     {
         if($request->get('id') == null)
         {
-            if(Report::where('name', $request->get('name'))->count() > 0)
+            if(View::where('name', $request->get('name'))->count() > 0)
             {
-                $name = $request->get('name') . ' (' . Report::where('name', $request->get('name'))->count() . ")";
+                $name = $request->get('name') . ' (' . View::where('name', $request->get('name'))->count() . ")";
             }
             else{
                 $name = $request->get('name');
             }
-            $report = Report::create(['name' => $name, 'settings' => json_encode($request->get('settings'))]);
+            $view = View::create(['name' => $name, 'settings' => json_encode($request->get('settings'))]);
         }
         else
         {
 
-            $report = Report::find($request->id);
-            $report->settings = json_encode($request->get('settings'));
-            $report->save();
+            $view = Views::find($request->id);
+            $view->settings = json_encode($request->get('settings'));
+            $view->save();
         }
 
-        return '<a onclick="updateReport(' . $report->id . ')" id="save-report" style="cursor: pointer"> Save Report Updates</a>';
+        return '<a onclick="updatView(' . $view->id . ')" id="save-view" style="cursor: pointer"> Save View Updates</a>';
     }
 }

@@ -212,7 +212,7 @@ $section = 'reports';
     $('#dataset').change(function( event ){
         var dataset_id = $('#dataset').val();
         $.ajax({
-            url: '{{action('\CityNexus\CityNexus\Http\ReportsController@getDataFields')}}/' + dataset_id + '/null/distribution',
+            url: '{{action('\CityNexus\CityNexus\Http\ViewController@getDataFields')}}/' + dataset_id + '/null/distribution',
         }).success(function (data) {
             $('#datafields').html(data);
         }).error(function (data)
@@ -235,7 +235,7 @@ $section = 'reports';
         if(name != null)
         {
             $.ajax({
-                url: "{{action('\CityNexus\CityNexus\Http\ReportsController@postSaveReport')}}",
+                url: "{{action('\CityNexus\CityNexus\Http\ViewController@postSaveView')}}",
                 type: 'post',
                 data: {
                     _token: "{{csrf_token()}}",
@@ -261,7 +261,7 @@ $section = 'reports';
         var key = "{{$key}}";
 
         $.ajax({
-            url: "{{action('\CityNexus\CityNexus\Http\ReportsController@postSaveReport')}}",
+            url: "{{action('\CityNexus\CityNexus\Http\ViewController@postSaveView')}}",
             type: 'post',
             data: {
                 _token: "{{csrf_token()}}",

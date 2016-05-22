@@ -4,9 +4,9 @@ namespace CityNexus\CityNexus;
 
 use Illuminate\Database\Eloquent\Model;
 
-class Report extends Model
+class View extends Model
 {
-    protected $table = 'citynexus_reports';
+    protected $table = 'citynexus_report_views';
     protected $fillable = ['name', 'settings', 'access'];
 
     public function getSettingAttribute()
