@@ -39,4 +39,10 @@ class TagController extends Controller
         return view('citynexus::reports.maps.pinmap', compact('pins'));
     }
 
+    public function getList($id)
+    {
+        $tag = Tag::find($id);
+        return view('citynexus::tags.list', compact('tag'));
+    }
+
 }
