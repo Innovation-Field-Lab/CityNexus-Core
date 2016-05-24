@@ -63,13 +63,18 @@ $section = 'properties';
         @push('js_footer')
         <script src="/vendor/citynexus/plugins/datatables/jquery.dataTables.min.js"></script>
         <script src="/vendor/citynexus/plugins/datatables/dataTables.bootstrap.js"></script>
+        <script src="https://cdn.datatables.net/buttons/1.2.0/js/dataTables.buttons.min.js"></script>
+        <script src="//cdn.datatables.net/buttons/1.2.0/js/buttons.print.min.js"></script>
 
-        <script src="/vendor/citynexus/pages/datatables.init.js"></script>
 
         <script type="text/javascript">
             $(document).ready(function() {
                 $('#datatable').dataTable({
-                    stateSave: true
+                    stateSave: true,
+                    dom: 'Bfrtip',
+                    buttons: [
+                        'print'
+                    ]
                 });
                 $('#loading').addClass('hidden');
                 $('#table-wrapper').removeClass('hidden');

@@ -28,6 +28,7 @@ $section = 'properties';
                 </thead>
                 <tbody>
                 @foreach($tags as $tag)
+                    @if($tag->properties->count() > 0)
                     <tr>
                         <th>{{$tag->tag}}</th>
                         <th>{{$tag->properties->count()}}</th>
@@ -37,6 +38,7 @@ $section = 'properties';
                             <a class="btn btn-sm btn-primary" href="{{action('\CityNexus\CityNexus\Http\TagController@getList', ['id' => $tag->id])}}">List</a>
                         </td>
                     </tr>
+                    @endif
                 @endforeach
             </table>
         </div>
