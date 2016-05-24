@@ -11,7 +11,7 @@ if($property->aliases->count() > 0)
                         foreach($property->aliases as $alias)
                             {
                             $pagename .=
-                            '<li><a href="' . action('\CityNexus\CityNexus\Http\CitynexusController@getProperty', ['property_id' => $alias->id]) . '" id="demerge-alias">
+                            '<li><a href="' . action('\CityNexus\CityNexus\Http\PropertyController@getShow', ['property_id' => $alias->id]) . '" id="demerge-alias">
                                     ' . ucwords($alias->full_address) . '
                                 </a>
                             </li>'; }
@@ -25,7 +25,7 @@ if($property->aliasOf != null)
 
     $pagename .=
     '<small>(Alias of
-        <a href="' . action('\CityNexus\CityNexus\Http\CitynexusController@getProperty', ['property_id' => $property->aliasOf->id]) . '">'
+        <a href="' . action('\CityNexus\CityNexus\Http\PropertyController@getShow', ['property_id' => $property->aliasOf->id]) . '">'
             . ucwords($property->full_address) . '
         </a>
         <a href="'  . action('\CityNexus\CityNexus\Http\TablerController@getDemergeProperty', ['property_id' => $property->id]) . '">
@@ -151,7 +151,7 @@ $section = 'properties';
                 </div>
                 <div class="col-sm-4">
 
-                    @if($property->location->exists() && 'local' != env('APP_ENV'))
+                    @if($property->location_id != null && 'local' != env('APP_ENV'))
                         <div class="panel panel-default">
                                 <div id="pano" style="height: 250px"></div>
                         </div>
@@ -208,7 +208,7 @@ $section = 'properties';
 <script src="https://cdnjs.cloudflare.com/ajax/libs/typeahead.js/0.11.1/typeahead.jquery.js"></script>
 
 
-@if($property->location->exists())
+@if($property->location_id != null)
     <script>
         function initialize() {
             var point = {lat: {{$property->location->lat}}, lng:{{$property->location->long}} };
@@ -315,7 +315,7 @@ $section = 'properties';
             $('#no-tags').addClass('hidden');
             $('#pending').removeClass('hidden');
             $.ajax({
-                url: "{{action('\CityNexus\CityNexus\Http\PropertyController@getAssociateTag')}}",
+                url: "{{action('\CityNexus\CityNexus\Http\PropertyController@postAssociateTag')}}",
                 type: 'post',
                 data: {
                     _token: "{{csrf_token()}}",
@@ -347,7 +347,7 @@ $section = 'properties';
     {
         $('#tag-' + id).addClass('hidden');
         $.ajax({
-            url: "{{action('\CityNexus\CityNexus\Http\PropertyController@getRemoveTag')}}",
+            url: "{{action('\CityNexus\CityNexus\Http\PropertyController@postRemoveTag')}}",
             type: "post",
             data: {
                 _token: "{{csrf_token()}}",
