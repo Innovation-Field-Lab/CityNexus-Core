@@ -11,7 +11,7 @@ if($property->aliases->count() > 0)
                         foreach($property->aliases as $alias)
                             {
                             $pagename .=
-                            '<li><a href="' . action('\CityNexus\CityNexus\Http\CitynexusController@getProperty', ['property_id' => $alias->id]) . '" id="demerge-alias">
+                            '<li><a href="' . action('\CityNexus\CityNexus\Http\PropertyController@getShow', ['property_id' => $alias->id]) . '" id="demerge-alias">
                                     ' . ucwords($alias->full_address) . '
                                 </a>
                             </li>'; }
@@ -25,7 +25,7 @@ if($property->aliasOf != null)
 
     $pagename .=
     '<small>(Alias of
-        <a href="' . action('\CityNexus\CityNexus\Http\CitynexusController@getProperty', ['property_id' => $property->aliasOf->id]) . '">'
+        <a href="' . action('\CityNexus\CityNexus\Http\PropertyController@getShow', ['property_id' => $property->aliasOf->id]) . '">'
             . ucwords($property->full_address) . '
         </a>
         <a href="'  . action('\CityNexus\CityNexus\Http\TablerController@getDemergeProperty', ['property_id' => $property->id]) . '">
@@ -40,22 +40,17 @@ $section = 'properties';
 
 @section(config('citynexus.section'))
 
-    <div class="panel panel-default">
-        <div class="panel-heading">
-
+    <div class="card-box">
             <div class="dropdown pull-right">
                 <div class="dropdown-toggle" id="dropdownMenu1" data-toggle="dropdown" aria-haspopup="true" aria-expanded="true" style="cursor: pointer">
-                    <i class="glyphicon glyphicon-chevron-down"></i>
+                    <i class="zmdi zmdi-more-vert"></i>
                 </div>
                 <ul class="dropdown-menu" aria-labelledby="dropdownMenu1">
                     <li><a href="{{action('\CityNexus\CityNexus\Http\TablerController@getMergeRecords')}}/{{$property->id}}">Merge Property</a></li>
                     <li><a href="#">Add Record</a></li>
                 </ul>
             </div>
-            <div class="panel-title">
 
-            </div>
-        </div>
         <div class="panel-body">
                 <div class="col-sm-8">
                     <div class="panel panel-default">
@@ -315,7 +310,7 @@ $section = 'properties';
             $('#no-tags').addClass('hidden');
             $('#pending').removeClass('hidden');
             $.ajax({
-                url: "{{action('\CityNexus\CityNexus\Http\PropertyController@getAssociateTag')}}",
+                url: "{{action('\CityNexus\CityNexus\Http\PropertyController@postAssociateTag')}}",
                 type: 'post',
                 data: {
                     _token: "{{csrf_token()}}",
@@ -347,7 +342,7 @@ $section = 'properties';
     {
         $('#tag-' + id).addClass('hidden');
         $.ajax({
-            url: "{{action('\CityNexus\CityNexus\Http\PropertyController@getRemoveTag')}}",
+            url: "{{action('\CityNexus\CityNexus\Http\PropertyController@postRemoveTag')}}",
             type: "post",
             data: {
                 _token: "{{csrf_token()}}",
@@ -432,6 +427,14 @@ $section = 'properties';
     }
 
 </style>
+
+<script>
+    function viewMeta( message , name)
+    {
+        var newTitle = 'Metadata for ' + name;
+        triggerModal(newTitle, message);
+    }
+</script>
 
 @endpush
 
