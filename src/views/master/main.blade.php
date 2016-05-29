@@ -73,6 +73,16 @@
 
 
     <script type="text/javascript">
+
+            function triggerModal(newTitle, newBody)
+            {
+                $("#modal-title").html(newTitle);
+                $("#modal-text").html(newBody);
+                Custombox.open({
+                    target: '#modal',
+                    effect: 'fadein'
+                });
+            }
             $(function () {
                 var i = -1;
                 var toastCount = 0;
