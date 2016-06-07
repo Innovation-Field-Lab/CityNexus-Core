@@ -146,7 +146,7 @@ $section = 'properties';
                 </div>
                 <div class="col-sm-4">
 
-                    @if($property->location->exists() && 'local' != env('APP_ENV'))
+                    @if($property->location_id != null && 'local' != env('APP_ENV'))
                         <div class="panel panel-default">
                                 <div id="pano" style="height: 250px"></div>
                         </div>
@@ -203,7 +203,7 @@ $section = 'properties';
 <script src="https://cdnjs.cloudflare.com/ajax/libs/typeahead.js/0.11.1/typeahead.jquery.js"></script>
 
 
-@if($property->location->exists())
+@if($property->location_id != null)
     <script>
         function initialize() {
             var point = {lat: {{$property->location->lat}}, lng:{{$property->location->long}} };
