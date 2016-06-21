@@ -263,7 +263,7 @@ class RiskScoreController extends Controller
 
         $this->runScore($score, $elements);
 
-        return redirect( config('citynexus.root_directory') . '/risk-score/scores' );
+        return redirect( action('\CityNexus\CityNexus\Http\RiskScoreController@getIndex') );
     }
 
     public function getEditScore($id)
