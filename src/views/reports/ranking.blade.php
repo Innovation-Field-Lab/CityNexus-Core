@@ -15,6 +15,7 @@
             <table class="table table-bordered hidden" id="properties-table">
                 <thead>
                 <tr>
+                    <th>Rank</th>
                     <th>Score</th>
                     <th>Address</th>
                     <th>Property ID</th>
@@ -22,8 +23,9 @@
                 </tr>
                 </thead>
                 <tbody>
-                @foreach($properties as $item)
+                @foreach($properties as $rank => $item)
                     <tr>
+                        <td>{{$rank + 1}}</td>
                         <td>{{$item->score}}</td>
                         <td>{{ucwords($item->full_address)}}</td>
                         <td>{{$item->property_id}}</td>
@@ -48,7 +50,7 @@
     $(document).ready(function() {
         $('#properties-table').DataTable(
                 {
-                    "order": [[0, 'desc']]
+                    "order": [[0, 'asc']]
                 }
         );
         $('#loading').addClass('hidden');

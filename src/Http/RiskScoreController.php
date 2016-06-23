@@ -83,6 +83,7 @@ class RiskScoreController extends Controller
         $properties = DB::table($table)
             ->join('citynexus_properties', 'citynexus_properties.id', '=', 'property_id')
             ->select($table . '.property_id', $table . '.score', 'citynexus_properties.full_address')
+            ->orderBy($table . '.score', 'DESC')
             ->get();
 
         //Return view of properties
