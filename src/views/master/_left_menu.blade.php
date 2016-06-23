@@ -45,15 +45,15 @@
                 </li>
                 @endcan
 
-                @can('citynexus', ['datasets', 'view'])
+                @can('citynexus', ['reports', 'view'])
                 <li class="has_sub">
-                    <a href="javascript:void(0);" class="waves-effect @if(isset($section) && $section == 'datasets') active @endif "><i class="fa fa-database"></i> <span> Data Sets </span> <span class="menu-arrow"></span></a>
+                    <a href="javascript:void(0);" class="waves-effect @if(isset($section) && $section == 'reports') active @endif "><i class="fa fa-area-chart"></i> <span> Charts and Maps </span> <span class="menu-arrow"></span></a>
                     <ul class="list-unstyled">
-                        <li><a href="{{action('\CityNexus\CityNexus\Http\TablerController@getIndex')}}">All Data Sets</a></li>
-                        @can('citynexus', ['group' => 'datasets', 'method' => 'create'])
+                        <li><a href="{{action('\CityNexus\CityNexus\Http\ViewController@getIndex')}}">Saved Views</a></li>
                         <li role="separator" class="divider"></li>
-                        <li><a href="{{action('\CityNexus\CityNexus\Http\TablerController@getUploader')}}">New From Upload</a></li>
-                        @endcan
+                        <li class="@if(isset($pagename) &&  $pagename == 'Scatter Chart') active @endif"><a href="{{action('\CityNexus\CityNexus\Http\ViewController@getScatterChart')}}">Scatter Chart Builder</a></li>
+                        <li class="@if(isset($pagename) &&  $pagename == 'Bates Distribution') active @endif"><a href="{{action('\CityNexus\CityNexus\Http\ViewController@getDistribution')}}">Distribution Curve Builder</a></li>
+                        <li class="@if(isset($pagename) &&  $pagename == 'Heat Map') active @endif"><a href="{{action('\CityNexus\CityNexus\Http\ViewController@getHeatMap')}}">Heat Map Builder</a></li>
                     </ul>
                 </li>
                 @endcan
@@ -71,15 +71,15 @@
                 </li>
                 @endcan
 
-                @can('citynexus', ['reports', 'view'])
+                @can('citynexus', ['datasets', 'view'])
                 <li class="has_sub">
-                    <a href="javascript:void(0);" class="waves-effect @if(isset($section) && $section == 'reports') active @endif "><i class="fa fa-area-chart"></i> <span> Reports </span> <span class="menu-arrow"></span></a>
+                    <a href="javascript:void(0);" class="waves-effect @if(isset($section) && $section == 'datasets') active @endif "><i class="fa fa-database"></i> <span> Data Sets </span> <span class="menu-arrow"></span></a>
                     <ul class="list-unstyled">
-                        <li><a href="{{action('\CityNexus\CityNexus\Http\ViewController@getIndex')}}">Saved Report Views</a></li>
+                        <li><a href="{{action('\CityNexus\CityNexus\Http\TablerController@getIndex')}}">All Data Sets</a></li>
+                        @can('citynexus', ['group' => 'datasets', 'method' => 'create'])
                         <li role="separator" class="divider"></li>
-                        <li class="@if(isset($pagename) &&  $pagename == 'Scatter Chart') active @endif"><a href="{{action('\CityNexus\CityNexus\Http\ViewController@getScatterChart')}}">Scatter Chart Builder</a></li>
-                        <li class="@if(isset($pagename) &&  $pagename == 'Bates Distribution') active @endif"><a href="{{action('\CityNexus\CityNexus\Http\ViewController@getDistribution')}}">Distribution Curve Builder</a></li>
-                        <li class="@if(isset($pagename) &&  $pagename == 'Heat Map') active @endif"><a href="{{action('\CityNexus\CityNexus\Http\ViewController@getHeatMap')}}">Heat Map Builder</a></li>
+                        <li><a href="{{action('\CityNexus\CityNexus\Http\TablerController@getUploader')}}">New From Upload</a></li>
+                        @endcan
                     </ul>
                 </li>
                 @endcan
