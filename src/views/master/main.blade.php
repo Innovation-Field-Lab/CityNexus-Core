@@ -61,7 +61,6 @@
 <script src="/vendor/citynexus/js/waves.js"></script>
 <script src="/vendor/citynexus/js/jquery.nicescroll.js"></script>
 <script src="/vendor/citynexus/js/jquery.scrollTo.min.js"></script>
-<script src="/vendor/citynexus/plugins/jquery-knob/jquery.knob.js"></script>
 
 <!-- App js -->
 <script src="/vendor/citynexus/js/jquery.core.js"></script>
@@ -70,6 +69,7 @@
 <!-- Modal-Effect -->
 <script src="/vendor/citynexus/plugins/custombox/dist/custombox.min.js"></script>
 <script src="/vendor/citynexus/plugins/custombox/dist/legacy.min.js"></script>
+<script src="/vendor/citynexus/js/typeahead.js"></script>
 
 
     <script type="text/javascript">
@@ -226,6 +226,23 @@
         })
 
     }
+
+    jQuery(document).ready(function($) {
+        var engine = new Bloodhound({
+            datumTokenizer: Bloodhound.tokenizers.whitespace,
+            queryTokenizer: Bloodhound.tokenizers.whitespace,
+            prefetch: '{{action('\CityNexus\CityNexus\Http\SearchController@getPrefetch')}}'
+        });
+
+        $("#search").typeahead({
+            hint: true,
+            highlight: true,
+            minLength: 2
+        }, {
+            source: engine,
+            name: 'search_list'
+        });
+    });
 </script>
 
 @include('citynexus::master.includes._alerts')
