@@ -26,7 +26,7 @@
             </ul>
             {{----}}
             {{--<!-- Right(Notification and Searchbox -->--}}
-            {{--<ul class="nav navbar-nav navbar-right">--}}
+            <ul class="nav navbar-nav navbar-right">
                 {{--<li>--}}
                     {{--<!-- Notification -->--}}
                     {{--<div class="notification-box">--}}
@@ -44,14 +44,16 @@
                     {{--</div>--}}
                     {{--<!-- End Notification bar -->--}}
                 {{--</li>--}}
-                {{--<li class="hidden-xs">--}}
-                    {{--<form role="search" class="app-search">--}}
-                        {{--<input type="text" placeholder="Search..."--}}
-                               {{--class="form-control">--}}
-                        {{--<a href=""><i class="fa fa-search"></i></a>--}}
-                    {{--</form>--}}
-                {{--</li>--}}
-            {{--</ul>--}}
+                <li class="hidden-xs">
+                    <form role="search" class="app-search" action="{{action('\CityNexus\CityNexus\Http\SearchController@getSearch')}}">
+                        {{csrf_field()}}
+                        <input type="text" id="search" name="query" placeholder="Search..."
+                               class="form-control">
+                        <a href=""><i class="fa fa-search"></i></a>
+                        <input type="submit" class="hidden">
+                    </form>
+                </li>
+            </ul>
 
         </div><!-- end container -->
     </div><!-- end navbar -->
