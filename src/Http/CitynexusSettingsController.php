@@ -56,7 +56,8 @@ class CitynexusSettingsController extends Controller
             $user->last_name = $request->get('last_name');
             $user->email = $request->get('email');
             $user->password = str_random();
-            $user->admin = $this->testPref($request->all(), 'admin');
+            $user->admin = $request->get('admin');
+            $user->permissions = json_encode($request->get('permissions'));
 
             //Save the user Model
             $user->save();
