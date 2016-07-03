@@ -29,7 +29,7 @@ class PropertyController extends Controller
     {
         $this->authorize('citynexus', ['properties', 'view']);
 
-        $properties = Property::where('alias_of', null)->get();
+        $properties = Property::whereNull('alias_of')->get(['house_number', 'street_name', 'street_type', 'unit']);
         return view('citynexus::property.index', compact('properties'));
     }
 

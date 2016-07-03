@@ -46,8 +46,14 @@ class Property extends Model
         return $this->belongsTo('\CityNexus\CityNexus\Location');
     }
 
+<<<<<<< HEAD
     public function tasks()
     {
         return $this->morphToMany('\CityNexus\CityNexus\Task', 'citynexus_taskable');
+=======
+    public function images()
+    {
+        return $this->hasMany('\CityNexus\CityNexus\Image')->orderBy('created_at', 'DESC');
+>>>>>>> master
     }
 }
