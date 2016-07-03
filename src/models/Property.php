@@ -45,4 +45,9 @@ class Property extends Model
     {
         return $this->belongsTo('\CityNexus\CityNexus\Location');
     }
+
+    public function tasks()
+    {
+        return $this->morphToMany('\CityNexus\CityNexus\Task', 'citynexus_taskable');
+    }
 }
