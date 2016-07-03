@@ -84,7 +84,7 @@ class TaskController extends Controller
 
         if($task->due_by != null)
         {
-            $message .= "<p><b>Due Date: " . $task->due->formatLocalized('%d %B %Y') . "</b></p>";
+            $message .= "<p><b>Due Date: " . $task->due_at->formatLocalized('%d %B %Y') . "</b></p>";
         }
         $message .= "<a style='background-color: #008CBA; /* Blue */
           border: none;
