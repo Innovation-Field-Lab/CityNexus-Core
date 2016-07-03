@@ -146,7 +146,8 @@ $section = 'properties';
                 </div>
                 <div class="col-sm-4">
                     <div class="btn-group">
-                        <button type="button" class="btn btn-default dropdown-toggle waves-effect" data-toggle="dropdown" aria-expanded="false"> Property Actions <span class="caret"></span> </button>
+                        <button type="button" class="btn btn-primary dropdown-toggle waves-effect" data-toggle="dropdown" aria-expanded="false"> Property Actions <span class="caret"></span> </button>
+                        <br><br>
                         <ul class="dropdown-menu">
                             <li><a onclick="addTask()">Add Task</a></li>
                             <li><a href="{{action('\CityNexus\CityNexus\Http\TablerController@getMergeRecords')}}/{{$property->id}}">Merge Property</a></li>

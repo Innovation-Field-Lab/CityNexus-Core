@@ -21,14 +21,19 @@ class Task extends Model
         return $this->belongsTo('\App\User', 'assigned_to');
     }
 
+    public function property()
+    {
+        return $this->morphedByMany('\CityNexus\CityNexus\Property', 'citynexus_taskable');
+    }
+
     public function scopeOpen($query)
     {
-        return $query->orderBy('created_at')->orderBy('due_at')->where('completed_at' == null);
+        return $query->orderBy('created_at', 'DESC')->orderBy('due_at', 'DESC')->whereNull('completed_at');
     }
 
     public function scopeClosed($query)
     {
-        return $query->orderBy('created_at')->orderBy('due_at')->where('completed_at' != null);
+        return $query->orderBy('created_at', 'DESC')->orderBy('due_at', 'DESC')->whereNotNull('completed_at');
     }
 
     public function scopePastDue($query)

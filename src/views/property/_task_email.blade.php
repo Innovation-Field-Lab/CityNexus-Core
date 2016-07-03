@@ -5,6 +5,7 @@
 <p>{{$task->description}}</p>';
 @if($task->due_by != null)
 <p><b>Due Date: {{$task->due->formatLocalized('%d %B %Y')}}</b></p>
+@endif
 <a style='background-color: #008CBA; /* Blue */
           border: none;
           color: white;
