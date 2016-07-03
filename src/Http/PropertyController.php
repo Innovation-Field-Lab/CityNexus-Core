@@ -49,8 +49,9 @@ class PropertyController extends Controller
 
         // Initiallizes the variable to disclose aliases in dataset
         $disclaimer = false;
+        $users = User::orderBy('last_name')->get();
 
-        return view('citynexus::property.show', compact('property', 'datasets', 'tables', 'disclaimer', 'tags', 'apts'));
+        return view('citynexus::property.show', compact('users', 'property', 'datasets', 'tables', 'disclaimer', 'tags', 'apts'));
     }
 
     public function postAssociateTag(Request $request)
