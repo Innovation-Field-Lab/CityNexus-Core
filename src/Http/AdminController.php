@@ -38,9 +38,23 @@ class AdminController extends Controller
 
     }
 
-    public function getProcessData($id, $table_name)
+    public function getProcessData($table_name, $id = false)
     {
-        $this->dispatch(new ProcessData($id, $table_name));
+
+        $this->authorize('citynexus', ['admin', 'edit']);
+
+        if($id)
+        {
+            $table = DB::table($table_name)->get();
+            foreach($table as $i)
+            {
+                $this->dispatch(new ProcessData($i->id, $table_name));
+            }
+        }
+        else
+        {
+            $this->dispatch(new ProcessData($id, $table_name));
+        }
 
         return redirect()->back();
     }
@@ -49,9 +63,9 @@ class AdminController extends Controller
     {
         $this->authorize('citynexus', ['admin', 'view']);
 
-        $properties = Property::whereNull('lat')->get();
+        $location = Location::whereNull('lat')->get();
 
-        foreach ($properties as $i) {
+        foreach ($location as $i) {
             $this->dispatch(new GeocodeJob($i->id));
         }
     }
