@@ -38,23 +38,9 @@ class AdminController extends Controller
 
     }
 
-    public function getProcessData($table_name, $id = false)
+    public function getProcessData($id, $table_name)
     {
-
-        $this->authorize('citynexus', ['admin', 'edit']);
-
-        if($id)
-        {
-            $table = DB::table($table_name)->get();
-            foreach($table as $i)
-            {
-                $this->dispatch(new ProcessData($i->id, $table_name));
-            }
-        }
-        else
-        {
-            $this->dispatch(new ProcessData($id, $table_name));
-        }
+        $this->dispatch(new ProcessData($id, $table_name));
 
         return redirect()->back();
     }
@@ -63,9 +49,9 @@ class AdminController extends Controller
     {
         $this->authorize('citynexus', ['admin', 'view']);
 
-        $location = Location::whereNull('lat')->get();
+        $properties = Property::whereNull('lat')->get();
 
-        foreach ($location as $i) {
+        foreach ($properties as $i) {
             $this->dispatch(new GeocodeJob($i->id));
         }
     }
@@ -218,6 +204,22 @@ class AdminController extends Controller
         $schedule->command(
             "db:backup --database=mysql --destination=s3 --destinationPath=/{$environment}/projectname_{$environment}_{$date} --compression=gzip"
         )->weekly();
+    }
+
+    public function getMigrateAdmin()
+    {
+        $users = User::all();
+        foreach($users as $i)
+        {
+            if($i->admin)
+            {
+                $i->super_admin = true;
+                $i->save();
+            }
+        }
+
+        Session::flash('flash_success', 'Updates completed');
+        return redirect()->back();
     }
 
 }
