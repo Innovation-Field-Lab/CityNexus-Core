@@ -43,6 +43,16 @@ class GeocodeJob extends Job implements SelfHandling, ShouldQueue
             {
                 $location->lat = $geocode->getLatitude();
                 $location->long = $geocode->getLongitude();
+                $location->polygon = \GuzzleHttp\json_encode($geocode->getBounds());
+                $location->street_number = $geocode->getStreetNumber();
+                $location->street_name = $geocode->getStreetName();
+                $location->locality = $geocode->getLocality();
+                $location->postal_code = $geocode->getPostalCode();
+                $location->sub_locality = $geocode->getSubLocality();
+                $location->admin_levels = \GuzzleHttp\json_encode($geocode->getAdminLevels());
+                $location->country = $geocode->getCountry();
+                $location->country_code = $geocode->getCountryCode();
+                $location->timezone = $geocode->getTimezone();
             }
 
             $location->save();

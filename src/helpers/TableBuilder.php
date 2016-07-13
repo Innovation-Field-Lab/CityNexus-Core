@@ -87,43 +87,49 @@ class TableBuilder
             if($key != null && isset($i->$key)) $search[$field] = $i->$key;
         }
 
-        $search = $this->processAddress($search);
-
-        if($search['house_number'] == null)
-        {
-            return false;
+        $PSync = new PropertySync();
+        if(array_key_exists('full_address', $search)) {
+            return $PSync->addressSync($search['full_address']);
+        }
+        else {
+            return $PSync->addressSync($search);
         }
 
+//        if($search['house_number'] == null)
+//        {
+//            return false;
+//        }
+//
+//
+//        if($search)
+//        {
+//        //Get the ID of the first row matching the sync parameters
+//        $return = DB::table($table_name)
+//            ->where($search)
+//            ->pluck('id');
+//
+//
+//            //Create new property record
+//            if($return == null)
+//            {
+//
+//                // Check if should be flagged
+//                $search = $this->checkAddress($search);
+//
+//                // Add timestamp fields
+//                $search['created_at'] = Carbon::now();
+//                $search['updated_at'] = Carbon::now();
+//
+//                // Create a new record in the master table.
+//                $return = DB::table($table_name)
+//                    ->insertGetId($search);
+//            }
+//
+//        return $return;
 
-        if($search)
-        {
-        //Get the ID of the first row matching the sync parameters
-        $return = DB::table($table_name)
-            ->where($search)
-            ->pluck('id');
-
-
-            //Create new property record
-            if($return == null)
-            {
-
-                // Check if should be flagged
-                $search = $this->checkAddress($search);
-
-                // Add timestamp fields
-                $search['created_at'] = Carbon::now();
-                $search['updated_at'] = Carbon::now();
-
-                // Create a new record in the master table.
-                $return = DB::table($table_name)
-                    ->insertGetId($search);
-            }
-
-        return $return;
-
-        }
-        else
-            return false;
+//        }
+//        else
+//            return false;
     }
 
     protected function checkAddress($search)

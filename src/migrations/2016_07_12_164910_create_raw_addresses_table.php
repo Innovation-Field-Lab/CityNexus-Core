@@ -28,6 +28,6 @@ class CreateRawAddressesTable extends Migration
      */
     public function down()
     {
-        Schema::drop('raw_addresses');
+        Schema::drop('citynexus_raw_addresses');
     }
 }
