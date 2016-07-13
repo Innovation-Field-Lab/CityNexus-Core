@@ -53,32 +53,5 @@ class ProcessData extends Job implements SelfHandling, ShouldQueue
             Error::create(['location' => 'Process Uploader', 'data' => json_encode(['id' => $this->id, 'table' => $this->table, 'error' => $e])]);
         }
 
-        try
-        {
-            // Get property record
-            $property = Property::find($id);
-            if($property->location_id == null) {
-                $location = Location::firstOrCreate(['full_address' => $property->house_number . ' ' . $property->street_name . ' ' . $property->street_type]);
-             if($location->lat == null && env('APP_ENV') != 'testing' && env('APP_ENV') != 'local')
-             {
-                 $geocode = Geocoder::geocode(   $property->full_address  . ', ' . config('citynexus.city_state'));
-                 $location->lat = $geocode->getLatitude();
-                 $location->long = $geocode->getLongitude();
-             }
-                $property->location_id = $location->id;
-                $property->save();
-            }
-
-        }
-        catch(\Exception $e)
-        {
-            $data['e'] = $e;
-            if(isset($id)) $data['id'] = $id; else $data['id'] = null;
-            $data['id'] = $this->id;
-            $data['table'] = $this->table;
-
-            Error::create(['location' => 'GeoCode on UploadData', 'data' => json_encode($data)]);
-        }
-
     }
 }

@@ -66,6 +66,12 @@ class TablerController extends Controller
         $this->authorize('citynexus', ['group' => 'datasets', 'method' => 'create']);
 
         $table = json_decode(Table::find($id)->raw_upload)->parsed;
+        if($table == null)
+        {
+            Table::find($id)->delete();
+            Session::flash('flash_success', "Uploaded file may have been uploaded, please try again.");
+            return redirect()->back();
+        }
         $typer = new Typer();
         $builder = new TableBuilder();
         $table = end($table);
@@ -235,6 +241,7 @@ class TablerController extends Controller
             {
                 if(isset($settings->unique_id) && $settings->unique_id != null)
                 {
+                    dd($i);
                     if(!isset($existing[$i->id]))
                     {
 

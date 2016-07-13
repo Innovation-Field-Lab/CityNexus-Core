@@ -10,6 +10,7 @@ use Illuminate\Database\Schema\Blueprint;
 use Illuminate\Support\Facades\Schema;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Foundation\Bus\DispatchesJobs;
+use Toin0u\Geocoder\Facade\Geocoder;
 
 class PropertySync
 {
@@ -78,10 +79,9 @@ class PropertySync
             $location->polygon = \GuzzleHttp\json_encode($geocode->getBounds());
             $location->street_number = $geocode->getStreetNumber();
             $location->street_name = $geocode->getStreetName();
-            $location->locality = $geocode->getLocality();
-            $location->postal_code = $geocode->getPostalCode();
-            $location->sub_locality = $geocode->getSubLocality();
-            $location->admin_levels = \GuzzleHttp\json_encode($geocode->getAdminLevels());
+            $location->locality = $geocode->getCity();
+            $location->postal_code = $geocode->getZipcode();
+            $location->sub_locality = $geocode->getRegion();
             $location->country = $geocode->getCountry();
             $location->country_code = $geocode->getCountryCode();
             $location->timezone = $geocode->getTimezone();
