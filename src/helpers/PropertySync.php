@@ -17,8 +17,30 @@ class PropertySync
 
     public function addressSync($raw_address)
     {
+        if(!is_array($raw_address))
+        {
+            $raw_address = ['full_address' => $raw_address];
+        }
 
-        if(is_array($raw_address))
+        if(isset($raw_address['full_address']))
+        {
+
+            // check for raw match
+            if($this->checkForRawID(json_encode($raw_address)))
+            {
+                return $this->checkForRawID(json_encode($raw_address));
+            }
+
+            // Clean address
+            $raw_address = $this->cleanAddress($raw_address);
+
+            //Explode address
+            $address = explode(' ', $raw_address['full_address']);
+
+            //Process Address
+            $address = $this->processFullAddress($address);
+        }
+        else
         {
             // check for raw match
             if($this->checkForRawID(json_encode($raw_address)))
@@ -36,25 +58,6 @@ class PropertySync
             if(isset($raw_address['unit']) )  {$address['unit'] = $raw_address['unit'];}
             $raw_address = json_encode($raw_address);
         }
-        else
-        {
-
-            // check for raw match
-            if($this->checkForRawID($raw_address))
-            {
-                return $this->checkForRawID($raw_address);
-            }
-
-            // Clean address
-            $raw_address = $this->cleanAddress($raw_address);
-
-
-            //Explode address
-            $address = explode(' ', $this->cleanAddress($raw_address));
-
-            //Process Address
-            $address = $this->processFullAddress($address);
-        }
 
         //If a zero address, return false
         if($address == false | $address['house_number'] == null)
@@ -68,9 +71,8 @@ class PropertySync
         $address = array_filter($address);
         $property = Property::firstOrCreate($address);
 
-
         //Save the raw upload
-        RawAddress::create(['address' => $raw_address, 'property_id' => $property->id]);
+        RawAddress::create(['address' => json_encode($raw_address), 'property_id' => $property->id]);
 
         if(null == $property->location_id )
         {
@@ -119,19 +121,11 @@ class PropertySync
      */
     private function cleanAddress($address)
     {
+        $pre = null;
 
-        if(is_array($address))
+        foreach($address as $k => $i)
         {
-            $pre = null;
-
-            foreach($address as $k => $i)
-            {
-                $post[$k] = str_replace(['.', ','], '', strtolower($i));
-            }
-        }
-        else
-        {
-            $post = $goodUrl = str_replace(['.', ','], '', strtolower($address));
+            $post[$k] = str_replace(['.', ','], '', strtolower($i));
         }
 
         return $post;

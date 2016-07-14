@@ -349,6 +349,55 @@ class TableBuilder
 
     }
 
+
+    public function saveRawAddress($table, $id)
+    {
+
+        //Create a empty array of the record
+        $record = [];
+        $dataset = Table::where('table_name', $table)->first();
+
+        $data = json_decode(DB::table($table)->where('id', $id)->pluck('raw'));
+
+        $settings = $dataset->schema;
+
+        //create an array of sync values
+        $syncValues = $this->findValues( $settings, 'sync' );
+
+        $syncValues = array_filter($syncValues);
+
+        foreach($syncValues as $key => $field)
+        {
+            if($key != null && isset($data->$key)) $address[$field] = $data->$key;
+        }
+
+        if(isset($address))
+        {
+            if(is_array($address))
+            {
+                $pre = null;
+
+                foreach($address as $k => $i)
+                {
+                    $post[$k] = str_replace(['.', ','], '', strtolower($i));
+                }
+            }
+            elseif(isset($address))
+            {
+                $post = $goodUrl = str_replace(['.', ','], '', strtolower($address));
+            }
+
+            $raw = RawAddress::firstOrCreate(['address' => json_encode($post)]);
+            $raw->property_id = DB::table($table)->where('id', $id)->pluck('property_id');
+            $raw->save();
+
+            return 'success';
+        }
+
+        return 'fail';
+
+    }
+
     /**
      *
      * Check that the array doesn't contain any
