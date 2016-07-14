@@ -45,7 +45,6 @@ class PropertySync
                 return $this->checkForRawID($raw_address);
             }
 
-
             // Clean address
             $raw_address = $this->cleanAddress($raw_address);
 
@@ -66,25 +65,30 @@ class PropertySync
         $address = array_filter($address);
 
         //Check for properties
-        $property = Property::firstOrCreate(array_filter($address));
+        $address = array_filter($address);
+        $property = Property::firstOrCreate($address);
+
 
         //Save the raw upload
         RawAddress::create(['address' => $raw_address, 'property_id' => $property->id]);
 
-        if(null == $property->location && env('APP_ENV') != 'testing')
+        if(null == $property->location_id )
         {
             $location = Location::firstOrCreate(['full_address' => $property->full_address]);
-            $geocode = Geocoder::geocode(   $location->full_address  . ', ' . config('citynexus.city_state'));
-
-            $location->polygon = \GuzzleHttp\json_encode($geocode->getBounds());
-            $location->street_number = $geocode->getStreetNumber();
-            $location->street_name = $geocode->getStreetName();
-            $location->locality = $geocode->getCity();
-            $location->postal_code = $geocode->getZipcode();
-            $location->sub_locality = $geocode->getRegion();
-            $location->country = $geocode->getCountry();
-            $location->country_code = $geocode->getCountryCode();
-            $location->timezone = $geocode->getTimezone();
+            if(env('APP_ENV') != 'testing')
+            {
+                $geocode = Geocoder::geocode(   $location->full_address  . ', ' . config('citynexus.city_state'));
+                $location->polygon = \GuzzleHttp\json_encode($geocode->getBounds());
+                $location->street_number = $geocode->getStreetNumber();
+                $location->street_name = $geocode->getStreetName();
+                $location->locality = $geocode->getCity();
+                $location->postal_code = $geocode->getZipcode();
+                $location->sub_locality = $geocode->getRegion();
+                $location->country = $geocode->getCountry();
+                $location->country_code = $geocode->getCountryCode();
+                $location->timezone = $geocode->getTimezone();
+            }
+            $location->save();
         }
 
         return $property->id;
@@ -93,7 +97,7 @@ class PropertySync
     private function processFullAddress($address)
     {
         //Set House Number
-        $property['house_number'] = $this->setHouseNumber($address[0]);
+        $property = $this->setHouseNumber($address[0]);
         unset($address[0]);
         $address = array_values($address);
 
@@ -180,12 +184,14 @@ class PropertySync
         }
 
         //Test if address is not a zero address
-        if (ctype_digit($property['house_number'])) {
-            return $property;
-        } else {
+        if (!ctype_digit($property['house_number'])) {
             $property = $this->checkForUnitInAddress($property['house_number']);
-            return ctype_digit($property['house_number']) ? $property : false;
+            if (!ctype_digit($property['house_number'])) {
+                $property['house_number'] = null;
+            }
         }
+
+        return $property;
     }
 
     /**
@@ -225,7 +231,14 @@ class PropertySync
         {
             if(!isset($streets[$i]) && !isset($units[$i]) && $test )
             {
-                $street .= ' ' . $i;
+                if(substr($i,0,1) == '#')
+                {
+                    $unit = $i;
+                    $test = false;
+                }
+                else{
+                    $street .= ' ' . $i;
+                }
                 unset($address[$k]);
             }
             else

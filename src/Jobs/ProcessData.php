@@ -35,23 +35,10 @@ class ProcessData extends Job implements SelfHandling, ShouldQueue
     {
 //        DB::reconnect();
 
-
         $tabler = new TableBuilder();
         //Process each individual record
 
-        try
-        {
-            $id = $tabler->processRecord($this->id, $this->table);
-
-            if($id == false)
-            {
-                return false;
-            }
-        }
-        catch(\Exception $e)
-        {
-            Error::create(['location' => 'Process Uploader', 'data' => json_encode(['id' => $this->id, 'table' => $this->table, 'error' => $e])]);
-        }
+        $tabler->processRecord($this->id, $this->table);
 
     }
 }

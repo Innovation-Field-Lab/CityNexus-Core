@@ -81,7 +81,6 @@ class TableBuilder
     {
         $search = [];
 
-
         foreach($syncValues as $key => $field)
         {
             if($key != null && isset($i->$key)) $search[$field] = $i->$key;
@@ -95,41 +94,6 @@ class TableBuilder
             return $PSync->addressSync($search);
         }
 
-//        if($search['house_number'] == null)
-//        {
-//            return false;
-//        }
-//
-//
-//        if($search)
-//        {
-//        //Get the ID of the first row matching the sync parameters
-//        $return = DB::table($table_name)
-//            ->where($search)
-//            ->pluck('id');
-//
-//
-//            //Create new property record
-//            if($return == null)
-//            {
-//
-//                // Check if should be flagged
-//                $search = $this->checkAddress($search);
-//
-//                // Add timestamp fields
-//                $search['created_at'] = Carbon::now();
-//                $search['updated_at'] = Carbon::now();
-//
-//                // Create a new record in the master table.
-//                $return = DB::table($table_name)
-//                    ->insertGetId($search);
-//            }
-//
-//        return $return;
-
-//        }
-//        else
-//            return false;
     }
 
     protected function checkAddress($search)
@@ -334,11 +298,12 @@ class TableBuilder
 
         //create an array of sync values
         $syncValues = $tabler->findValues( $settings, 'sync' );
-        $pushValues = $tabler->findValues( $settings, 'push' );
+//        $pushValues = $tabler->findValues( $settings, 'push' );
 
         //if there is a sync value, identify the index id
         if(isset($settings->property_id) && $settings->property_id)
         {
+
             $record[config('citynexus.index_id')] = $data->$settings->property_id;
         }
         elseif( count( $syncValues ) > 0)
@@ -347,16 +312,14 @@ class TableBuilder
 
             if($syncId != null)
             {
+
                 $record[config('citynexus.index_id')] = $syncId;
             }
-            else
-            {
-                return false;
-            }
+
         }
-        if(isset($record[config('citynexus.index_id')]))
-        {
-            //add remaining elements to the array
+
+
+        //add remaining elements to the array
             $record = $this->addElements($record, $data, $settings);
             $record = $this->processElements($settings, $record);
             $record = $this->checkForUsedKeys($record, $dataset);
@@ -366,27 +329,23 @@ class TableBuilder
             }
 
             try{
+
                 DB::table($table)->where('id', $id)->update($record);
             }
             catch(\Exception $e)
             {
-                Error::create(['location' => 'processRecord - Insert Record', 'data' => json_encode(['e' => $e, 'id' => $id, 'table' => $table, 'record' => $record])]);
+                Error::create(['location' => 'processRecord - Insert Record', 'data' => json_encode([ 'id' => $id, 'table' => $table])]);
             }
 
-            //If there are push values, update the primary property record
-            if (count($pushValues) > 0) {
-                $property = Property::find($record['property_id']);
-                foreach ($pushValues as $key => $value) {
-                    $property->$value = $data->$key;
-                }
-                $property->save();
-            }
-
-            return $record['property_id'];
-        } else
-        {
-            return false;
-        }
+//            //If there are push values, update the primary property record
+//            if (count($pushValues) > 0) {
+//                $property = Property::find($record['property_id']);
+//                foreach ($pushValues as $key => $value) {
+//                    dd($property);
+//                    $property->$value = $data->$key;
+//                }
+//                $property->save();
+//            }
 
     }
 

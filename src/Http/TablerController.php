@@ -241,7 +241,6 @@ class TablerController extends Controller
             {
                 if(isset($settings->unique_id) && $settings->unique_id != null)
                 {
-                    dd($i);
                     if(!isset($existing[$i->id]))
                     {
 
