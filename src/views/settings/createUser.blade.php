@@ -3,6 +3,7 @@
 @section(config('citynexus.section'))
 
             @include('citynexus::master._errors')
+
             <form action="{{action('\CityNexus\CityNexus\Http\CitynexusSettingsController@postCreateUser')}}" class="form-horizontal" method="post">
                 {{csrf_field()}}
                 <div class="panel panel-default">
@@ -10,16 +11,6 @@
                         <h4 class="panel-title" id="myModalLabel">Invite New User</h4>
                     </div>
                     <div class="panel-body">
-                        @if (count($errors) > 0)
-                            <div class="alert alert-danger">
-                                <strong>Whoops!</strong> There were some problems with your input.<br><br>
-                                <ul>
-                                    @foreach ($errors->all() as $error)
-                                        <li>{{ $error }}</li>
-                                    @endforeach
-                                </ul>
-                            </div>
-                        @endif
                         <div class="form-group">
                             <label for="first_name" class="control-label col-sm-4">First Name</label>
 
@@ -47,7 +38,7 @@
                             <label for="admin" class="control-label col-sm-4">Super Admin User</label>
 
                             <div class="col-sm-8">
-                                <input type="checkbox" id="admin" name="admin" value="true" @if(old('admin')) checked @endif"/>
+                                <input type="checkbox" id="admin" name="super_admin" value="true" @if(old('admin')) checked @endif"/>
                             </div>
                         </div>
 
@@ -62,7 +53,7 @@
 
                     </div>
                     <div class="panel-footer">
-                        <input type="submit" class="btn btn-primary" value="Invite user">
+                        <input type="submit" class="btn btn-primary" value="Invite User">
                     </div>
                 </div>
             </form>

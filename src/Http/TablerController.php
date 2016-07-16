@@ -66,6 +66,12 @@ class TablerController extends Controller
         $this->authorize('citynexus', ['group' => 'datasets', 'method' => 'create']);
 
         $table = json_decode(Table::find($id)->raw_upload)->parsed;
+        if($table == null)
+        {
+            Table::find($id)->delete();
+            Session::flash('flash_success', "Uploaded file may have been uploaded, please try again.");
+            return redirect()->back();
+        }
         $typer = new Typer();
         $builder = new TableBuilder();
         $table = end($table);
@@ -231,6 +237,12 @@ class TablerController extends Controller
         {
             $upload = null;
             $existing = DB::table($table->table_name)->lists('id');
+            if(!Schema::hasColumn($table->table_name, 'processed_at'))
+            {
+                Schema::table($table->table_name, function(Blueprint $table){
+                   $table->dateTime('processed_at')->nullable();
+                });
+            }
             foreach($data as $i)
             {
                 if(isset($settings->unique_id) && $settings->unique_id != null)
@@ -252,9 +264,7 @@ class TablerController extends Controller
 
             foreach($new_ids as $record)
             {
-
-                $this->dispatch(new ProcessData($record, $table));
-
+                $this->dispatch(new ProcessData($record, $table->table_name));
             }
 
         }
@@ -264,8 +274,6 @@ class TablerController extends Controller
 
             return redirect()->back();
         }
-
-//        Artisan::call('queue:listen');
 
         Session::flash('flash_success', "Upload has been successfully queued.");
 
@@ -399,6 +407,7 @@ class TablerController extends Controller
 
     public function getDownloadTable($table_name)
     {
+        set_time_limit(240);
         try{
 
 
@@ -409,7 +418,7 @@ class TablerController extends Controller
             $excel->sheet('Sheet 1', function($sheet) use($table) {
                 $sheet->fromArray($table);
             });
-        })->export('xls');
+        })->download('csv');
         }
         catch(\Exception $e)
         {
@@ -419,8 +428,6 @@ class TablerController extends Controller
 
         return $file;
     }
-
-    // AJAX Requests
 
     public function getDataFields($id)
     {

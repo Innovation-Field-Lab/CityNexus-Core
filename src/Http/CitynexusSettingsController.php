@@ -56,14 +56,7 @@ class CitynexusSettingsController extends Controller
             $user->last_name = $request->get('last_name');
             $user->email = $request->get('email');
             $user->password = str_random();
-            if($request->get('admin') == null)
-            {
-                $user->admin = false;
-            }
-            else
-            {
-                $user->admin = true;
-            }
+            $user->super_admin = $request->get('super_admin');
             $user->permissions = json_encode($request->get('permissions'));
 
             // Create activation token;
