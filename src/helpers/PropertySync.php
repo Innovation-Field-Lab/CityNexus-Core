@@ -166,28 +166,30 @@ class PropertySync
     private function setHouseNumber($houseNumber)
     {
 
+        $property['house_number']= $houseNumber;
 
         //Test for hypenated addresses
         if(strpos($houseNumber, '-'))
         {
-            $exploded = explode('-', $houseNumber);
-            $houseNumber = $exploded[0];
+            $exploded = explode('-', $property['house_number']);
+            $property['house_number'] = $exploded[0];
         }
 
+
+        // Clear leading zeros
+        $property['house_number'] = ltrim($property['house_number'], '0');
 
         //Test if address is not a zero address
         if (!ctype_digit($houseNumber)) {
-            $property = $this->checkForUnitInAddress($houseNumber);
-            if (!ctype_digit($houseNumber)) {
-                $houseNumber = null;
+            $property = $this->checkForUnitInAddress($property['house_number']);
+            if (!ctype_digit($property['house_number'])) {
+                dd($property);
+
+                $property['house_number'] = null;
             }
         }
 
-        // Clear leading zeros
-        $houseNumber = ltrim($houseNumber, '0');
-
-
-        return ['house_number' => $houseNumber];
+        return $property;
     }
 
     /**

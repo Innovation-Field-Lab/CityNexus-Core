@@ -47,7 +47,11 @@ class CitynexusSettingsController extends Controller
             'last_name' => 'required|max:255',
             'email' => 'required|max:255|email',
         ]);
-
+        if(User::where('email', $request->get('email'))->count() > 0)
+        {
+            Session::flash('flash_success', 'Oh oh! Looks like that email address already has an associated account.');
+            return redirect()->back()->withInput();
+        }
         try {
             // Save the request as a new User
             $user = new User();
