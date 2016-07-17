@@ -183,8 +183,6 @@ class PropertySync
         if (!ctype_digit($houseNumber)) {
             $property = $this->checkForUnitInAddress($property['house_number']);
             if (!ctype_digit($property['house_number'])) {
-                dd($property);
-
                 $property['house_number'] = null;
             }
         }
