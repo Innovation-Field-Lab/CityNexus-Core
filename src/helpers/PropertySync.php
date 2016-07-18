@@ -70,6 +70,9 @@ class PropertySync
         //Check for properties
         $address = array_filter($address);
         $property = Property::firstOrCreate($address);
+        $property->full_address = $property->full_address = trim($property->house_number . ' ' . $property->street_name . ' ' . $property->street_type . ' ' . $property->unit);
+
+        $property->save();
 
         //Save the raw upload
         RawAddress::create(['address' => json_encode($raw_address), 'property_id' => $property->id]);
@@ -91,6 +94,8 @@ class PropertySync
                 $location->timezone = $geocode->getTimezone();
             }
             $location->save();
+            $property->location_id = $location->id;
+            $property->save();
         }
 
         return $property->id;
