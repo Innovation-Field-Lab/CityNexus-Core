@@ -50,7 +50,11 @@ class TableBuilder
 
     public function cleanName($name)
     {
-        return strtolower(str_replace(' ', '_', (preg_replace('/[^a-zA-Z0-9_ -%][().\'][\/]/s', '', $name))));
+        $return = preg_replace("/[^a-zA-Z0-9_ -%][().'!][\/]/s", '', $name);
+        $return = strtolower($return);
+        $return = str_replace(["'", "`", "!"], '',$return);
+        $return = str_replace(["/", " ", "-"], '_',$return);
+        return $return;
     }
 
 
@@ -338,17 +342,6 @@ class TableBuilder
             {
                 Error::create(['location' => 'processRecord - Insert Record', 'data' => json_encode([ 'id' => $id, 'table' => $table])]);
             }
-
-//            //If there are push values, update the primary property record
-//            if (count($pushValues) > 0) {
-//                $property = Property::find($record['property_id']);
-//                foreach ($pushValues as $key => $value) {
-//                    dd($property);
-//                    $property->$value = $data->$key;
-//                }
-//                $property->save();
-//            }
-
 
     }
 
