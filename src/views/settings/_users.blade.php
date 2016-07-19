@@ -65,7 +65,7 @@
             "<input type='text' class='form-control' value='{{\Illuminate\Support\Facades\Session::get('flash_email')}}' disabled>" +
             "<br><input class='form-control' type='text' name='subject' value='Welcome to CityNexus'>'" +
             "<textarea class='form-control' name='message'>" +
-                    "To activate you account follow this link: {{ url('/activate-account?key=' . \Illuminate\Support\Facades\Session::get('flash_token')) }}" +
+                    "To activate your account follow this link: {{ url('/activate-account?key=' . \Illuminate\Support\Facades\Session::get('flash_token')) }}" +
             "</textarea>" +
             "<br><br><input type='submit' class='btn btn-primary' value='Invite User'>"
 
