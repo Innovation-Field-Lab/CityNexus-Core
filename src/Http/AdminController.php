@@ -6,12 +6,14 @@ use App\Jobs\FakeLocation;
 use App\User;
 use Carbon\Carbon;
 use CityNexus\CityNexus\CreateRaw;
+use CityNexus\CityNexus\Error;
 use CityNexus\CityNexus\GeocodeJob;
 use CityNexus\CityNexus\Location;
 use CityNexus\CityNexus\MergeProps;
 use CityNexus\CityNexus\ProcessData;
 use CityNexus\CityNexus\Property;
 use CityNexus\CityNexus\Upload;
+use Geocoder\Geocoder;
 use Illuminate\Console\Scheduling\Schedule;
 use Illuminate\Database\Schema\Blueprint;
 use Illuminate\Support\Facades\Artisan;
@@ -68,9 +70,9 @@ class AdminController extends Controller
     {
         $this->authorize('citynexus', ['admin', 'view']);
 
-        $properties = Property::whereNull('lat')->get();
+        $locactions = Location::whereNull('lat')->get();
 
-        foreach ($properties as $i) {
+        foreach ($locactions as $i) {
             $this->dispatch(new GeocodeJob($i->id));
         }
     }
@@ -234,6 +236,46 @@ class AdminController extends Controller
 
             return $count;
         }
+    }
+
+    public function getGeocodeErrors()
+    {
+        $count = 0;
+        $errors = Error::where('location', 'geocode')->get();
+        foreach($errors as $i)
+        {
+            $property = Property::find(\GuzzleHttp\json_decode($i->data)->property_id);
+
+            try{
+                $location = Location::firstOrCreate(['full_address' => $property->full_address]);
+                if(env('APP_ENV') != 'testing')
+                {
+                    $geocode = Geocoder::geocode(   $location->full_address  . ', ' . config('citynexus.city_state'));
+                    $location->lat = $geocode->getLatitude();
+                    $location->long = $geocode->getLongitude();
+                    $location->polygon = \GuzzleHttp\json_encode($geocode->getBounds());
+                    $location->street_number = $geocode->getStreetNumber();
+                    $location->street_name = $geocode->getStreetName();
+                    $location->locality = $geocode->getCity();
+                    $location->postal_code = $geocode->getZipcode();
+                    $location->sub_locality = $geocode->getRegion();
+                    $location->country = $geocode->getCountry();
+                    $location->country_code = $geocode->getCountryCode();
+                    $location->timezone = $geocode->getTimezone();
+                }
+                $location->save();
+                $property->location_id = $location->id;
+                $property->save();
+
+                $count++;
+            }
+            catch(\Exception $e)
+            {
+                Error::create(['location' => 'geocode', 'data' => \GuzzleHttp\json_encode(['property_id' => $property->id])]);
+            }
+            $i->delete();
+        }
+        return $count;
     }
 
 
