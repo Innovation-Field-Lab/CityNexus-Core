@@ -1,14 +1,13 @@
+@include('citynexus::widgets.widget_top')
+
 <?php
+if(isset($widget->setting->tag_id))
+{
     $tags = \CityNexus\CityNexus\Tag::find($widget->setting->tag_id)->properties->take(20);
-
+}
 ?>
-
-<div class="col-sm-4">
-    <div class="card-box">
-
-        <h4 class="header-title m-t-0 m-b-30">Tagged <a href="{{action('\CityNexus\CityNexus\Http\TagController@getList', [$widget->setting->tag_id])}}"><div class="label label-default">{{\CityNexus\CityNexus\Tag::find($widget->setting->tag_id)->tag}}</div></a></h4>
-
-        <div class="inbox-widget nicescroll" style="height: 315px;">
+    @if(isset($tags))
+            <a href="{{action('\CityNexus\CityNexus\Http\TagController@getList', [$widget->setting->tag_id])}}"><div class="label label-default">{{\CityNexus\CityNexus\Tag::find($widget->setting->tag_id)->tag}}</div></a>
             @foreach($tags as $i)
                 <a href="{{action('\CityNexus\CityNexus\Http\PropertyController@getShow', [$i->id])}}">
                     <div class="inbox-item">
@@ -18,6 +17,6 @@
                     </div>
                 </a>
             @endforeach
-        </div>
-    </div>
-</div><!-- end col -->
+    @endif
+
+@include('citynexus::widgets.widget_bottom')

@@ -22,9 +22,7 @@ class CitynexusController extends Controller
 
     public function getIndex()
     {
-
         $widgets = Auth::getUser()->widgets;
-
         return view('citynexus::dashboards.citymanager', compact('notes', 'widgets'));
     }
 

@@ -299,6 +299,19 @@ $section = 'dashboard';
 <!-- Dashboard init -->
 <script src="/vendor/citynexus/pages/jquery.dashboard.js"></script>
 
+<script>
+    function removeWidget( id )
+    {
+        $.ajax({
+            url: "{{action('\CityNexus\CityNexus\Http\WidgetController@getRemove')}}/" + id
+        }).success(function(){
+                    $("#widget-" + id).addClass('hidden');
+
+        });
+    }
+
+</script>
+
 
 @endpush
 
