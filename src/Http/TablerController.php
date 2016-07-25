@@ -475,26 +475,15 @@ class TablerController extends Controller
         return view('citynexus::tabler.snipits._field_settings', compact('dataset', 'scheme', 'field'));
     }
 
-<<<<<<< HEAD
     public function getRelinkRecord(Request $request, $table, $id, $newId = null)
     {
         DB::table($table)->where('id', $id)->update(['property_id' => $newId]);
 
-        if($request->isJson())
-        {
+        if ($request->isJson()) {
             return 'success';
-        }
-        else
-        {
+        } else {
             Session::flash('flash_info', 'Record unlinked.');
             return redirect()->back();
         }
-=======
-    public function getRelinkRecord($table, $id, $newId = null)
-    {
-        DB::table($table)->where('id', $id)->update(['property_id' => $newId]);
-
-        return 'success';
->>>>>>> master
     }
 }
