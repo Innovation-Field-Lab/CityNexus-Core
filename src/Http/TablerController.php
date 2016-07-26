@@ -3,11 +3,14 @@
 namespace CityNexus\CityNexus\Http;
 
 use Carbon\Carbon;
+use CityNexus\CityNexus\Dropbox;
 use CityNexus\CityNexus\ProcessData;
 use CityNexus\CityNexus\Property;
 use CityNexus\CityNexus\Upload;
+use GrahamCampbell\Dropbox\DropboxManager;
 use Illuminate\Database\Schema\Blueprint;
 use Illuminate\Support\Facades\Artisan;
+use Illuminate\Support\Facades\Config;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Schema;
 use Illuminate\Support\Facades\Session;
@@ -22,6 +25,12 @@ use CityNexus\CityNexus\TableBuilder;
 
 class TablerController extends Controller
 {
+
+    public function __construct(DropboxManager $dropbox, TableBuilder $tableBuilder)
+    {
+        $this->dropbox = $dropbox;
+        $this->tableBuilder = $tableBuilder;
+    }
 
     public function getIndex()
     {
@@ -463,5 +472,30 @@ class TablerController extends Controller
         $field = $scheme->$key;
         unset($dataset['_token']);
         return view('citynexus::tabler.snipits._field_settings', compact('dataset', 'scheme', 'field'));
+    }
+
+    public function getDropboxTest()
+    {
+
+//        Config::set(['connections' => [
+//
+//            'test' => [
+//                'token'  => 'C8oGDpOoOKUAAAAAAAAPsiaxeTUEbkgHOwZKBQ7hS2eWZqHqgc-uNCqdN5TPQgz5',
+//                'app'    => '5gmljq1uggpcrh9']
+//            ]]
+//        );
+        $file = '/Winthrop Data - Tax Collector/Tax Title Properties as of 6-22-16 As Sent.xlsx';
+        $metadata = $this->dropbox->connection('test')->getMetadata($file);
+        $mime_type = $metadata['mime_type'];
+
+        $stream = fopen('data://' . $mime_type . ',','w+');
+        $drop = $this->dropbox->connection('test')->getFile('/Winthrop Data - Tax Collector/Tax Title Properties as of 6-22-16 As Sent.xlsx', $stream);
+
+        dd($stream);
+        $table = Excel::load($drop, function($reader){$reader->toArray();});
+
+        $table = Table::create(['raw_upload' => json_encode($table)]);
+
+        return redirect(action('\CityNexus\CityNexus\Http\TablerController@getCreateScheme', ['table_id' => $table->id]));
     }
 }

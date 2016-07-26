@@ -45,6 +45,7 @@ class PackageServiceProvider extends ServiceProvider
         include_once __DIR__ . '/helpers/Typer.php';
         include_once __DIR__ . '/helpers/TableBuilder.php';
         include_once __DIR__ . '/helpers/PropertySync.php';
+        include_once __DIR__ . '/helpers/Dropbox.php';
 
         // Include Models
         include_once __DIR__ . '/models/Property.php';
