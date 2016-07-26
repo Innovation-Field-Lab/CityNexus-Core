@@ -254,7 +254,9 @@ class TablerController extends Controller
         try
         {
             $upload = null;
-            $existing = DB::table($table->table_name)->lists('id');
+            if(isset($settings->unique_id) && $settings->unique_id != null) {
+                $existing = DB::table($table->table_name)->lists($settings->unique_id);
+            }
             if(!Schema::hasColumn($table->table_name, 'processed_at'))
             {
                 Schema::table($table->table_name, function(Blueprint $table){
@@ -263,28 +265,36 @@ class TablerController extends Controller
             }
             foreach($data as $i)
             {
-                if(isset($settings->unique_id) && $settings->unique_id != null)
+                if(isset($existing))
                 {
-                    if(!isset($existing[$i->id]))
-                    {
-
-                        $upload[] = ['raw' => json_encode($i), 'processed_at' => $now, 'upload_id' => $upload_id, 'created_at' => $now, 'updated_at' => $now];
-                        $existing[$i->id] = $i->id;
-                    }
+                    $upload[$i[$settings->unique_id]] = ['raw' => json_encode($i), 'processed_at' => $now, 'upload_id' => $upload_id, 'created_at' => $now, 'updated_at' => $now];
                 }
                 else{
                     $upload[] = ['raw' => json_encode($i), 'processed_at' => $now, 'upload_id' => $upload_id, 'created_at' => $now, 'updated_at' => $now];
                 }
             }
 
-            DB::table($table->table_name)->insert($upload);
-            $new_ids = DB::table($table->table_name)->where('upload_id', $upload_id)->lists('id');
-
-            foreach($new_ids as $record)
+            if(isset($existing))
             {
-                $this->dispatch(new ProcessData($record, $table->table_name));
+                foreach($existing as $test)
+                {
+                    if(isset($upload[$test]))
+                    {
+                        unset($upload[$test]);
+                    }
+                }
             }
 
+            if(count($upload) > 0)
+            {
+                DB::table($table->table_name)->insert($upload);
+                $new_ids = DB::table($table->table_name)->where('upload_id', $upload_id)->lists('id');
+
+                foreach($new_ids as $record)
+                {
+                    $this->dispatch(new ProcessData($record, $table->table_name));
+                }
+            }
         }
         catch(Exception $e)
         {
@@ -497,5 +507,16 @@ class TablerController extends Controller
         $table = Table::create(['raw_upload' => json_encode($table)]);
 
         return redirect(action('\CityNexus\CityNexus\Http\TablerController@getCreateScheme', ['table_id' => $table->id]));
+
+    public function getRelinkRecord(Request $request, $table, $id, $newId = null)
+    {
+        DB::table($table)->where('id', $id)->update(['property_id' => $newId]);
+
+        if ($request->isJson()) {
+            return 'success';
+        } else {
+            Session::flash('flash_info', 'Record unlinked.');
+            return redirect()->back();
+        }
     }
 }

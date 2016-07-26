@@ -29,7 +29,7 @@ class PropertyController extends Controller
     {
         $this->authorize('citynexus', ['properties', 'view']);
 
-        $properties = Property::whereNull('alias_of')->get(['house_number', 'street_name', 'street_type', 'unit', 'id']);
+        $properties = Property::whereNull('alias_of')->whereNotNull('house_number')->get(['house_number', 'street_name', 'street_type', 'unit', 'id']);
         return view('citynexus::property.index', compact('properties'));
     }
 
@@ -49,7 +49,7 @@ class PropertyController extends Controller
 
         // Initiallizes the variable to disclose aliases in dataset
         $disclaimer = false;
-        $users = User::orderBy('last_name')->get();
+        $users = User::where('last_name', '>=', 'Alaback')->orderBy('last_name')->get();
 
         return view('citynexus::property.show', compact('users', 'property', 'datasets', 'tables', 'disclaimer', 'tags', 'apts'));
     }
