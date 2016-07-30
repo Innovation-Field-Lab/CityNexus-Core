@@ -66,7 +66,7 @@ class PropertySync
             return false;
         }
 
-        if(isset($address['house_number']) && $address['house_number'] == null)
+        if(!isset($address['house_number']) or $address['house_number'] == null)
         {
             return false;
         }
@@ -108,10 +108,10 @@ class PropertySync
             }
             catch(\Exception $e)
             {
-                Error::create(['location' => 'geocode', 'data' => \GuzzleHttp\json_encode(['property_id' => $property->id])]);
+                Error::create(['location' => 'geocode', 'data' => json_encode(['property_id' => $property->id])]);
+                return $property->id;
             }
         }
-
         return $property->id;
     }
 
