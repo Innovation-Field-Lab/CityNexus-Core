@@ -15,9 +15,9 @@
                     <input type="hidden" name="type" value="property_report">
 
                     <div class="form-group">
-                        <label for="name" class="control-label col-sm-4">Report Name</label>
+                        <label for="name" class="control-label col-sm-3">Report Name</label>
 
-                        <div class="col-sm-8">
+                        <div class="col-sm-9">
                             <input type="text" class="form-control" id="name" name="name" value="{{old('name')}}"/>
                         </div>
                     </div>
@@ -45,7 +45,7 @@
                                         <div id="{{$dataset->table_name}}_detail" class="panel-collapse collapse" role="tabpanel" aria-labelledby="headingTwo">
                                             <div class="list-group">
                                                 <div class="list-group-item"><input type="checkbox" class="dataset-{{$dataset->id}}" id="dataset-{{$dataset->id}}" onchange="selectAllDataset({{$dataset->id}})"> <b>Select All in Dataset</b></div>
-                                                <div class="list-group-item"><input type="checkbox" name="settings[datasets][{{$dataset->table_name}}][{{$created_at}}]" class="dataset-{{$dataset->id}}" value="true"> Time Stamp </div>
+                                                <div class="list-group-item"><input type="checkbox" name="settings[datasets][{{$dataset->table_name}}][created_at]" class="dataset-{{$dataset->id}}" value="true"> Time Stamp </div>
 
                                             @foreach($dataset->schema as $column)
                                                 @if(isset($column->show) && $column->show == true)

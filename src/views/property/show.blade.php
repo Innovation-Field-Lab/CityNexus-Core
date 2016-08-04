@@ -60,10 +60,10 @@ $section = 'properties';
                         <li><a href="{{action('\CityNexus\CityNexus\Http\TablerController@getMergeRecords')}}/{{$property->id}}">Merge Property</a></li>
                         @can('citynexus', ['property', 'delete'])<li><a href="{{action('\CityNexus\CityNexus\Http\PropertyController@getDelete', ['id' => $property->id])}}/{{$property->id}}"><i class="fa fa-trash"></i> Delete Property</a></li>@endcan
                         @if($reports != null)
-                            @can('citynexus', ['reports', 'view'])
+                            @can('superuser')
                             <li><b>Reports</b></li>
                             @foreach($reports as $i)
-                                <li><a href="{{action('\CityNexus\CityNexus\Http\ReportController@getPropertyReport', [$i->id, $property->id])}}">{{$i->name}}</a></li>
+                                <li><a href="{{action('\CityNexus\CityNexus\Http\ReportController@getPropertyReport', [$i->id, $property->id])}}" target="_blank">{{$i->name}}</a></li>
                             @endforeach
                             @endcan
                         @endif
