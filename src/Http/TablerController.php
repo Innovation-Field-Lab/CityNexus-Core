@@ -3,14 +3,10 @@
 namespace CityNexus\CityNexus\Http;
 
 use Carbon\Carbon;
-use CityNexus\CityNexus\Dropbox;
 use CityNexus\CityNexus\ProcessData;
 use CityNexus\CityNexus\Property;
 use CityNexus\CityNexus\Upload;
-use GrahamCampbell\Dropbox\DropboxManager;
 use Illuminate\Database\Schema\Blueprint;
-use Illuminate\Support\Facades\Artisan;
-use Illuminate\Support\Facades\Config;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Schema;
 use Illuminate\Support\Facades\Session;
@@ -20,16 +16,14 @@ use App\Http\Controllers\Controller;
 use Illuminate\Http\Request;
 use Maatwebsite\Excel\Facades\Excel;
 use CityNexus\CityNexus\Table;
-use CityNexus\CityNexus\UploadData;
 use CityNexus\CityNexus\TableBuilder;
 
 class TablerController extends Controller
 {
 
-    public function __construct(DropboxManager $dropbox, TableBuilder $tableBuilder)
+    public function __construct()
     {
-        $this->dropbox = $dropbox;
-        $this->tableBuilder = $tableBuilder;
+        $this->tableBuilder = new TableBuilder();
     }
 
     public function getIndex()
@@ -42,7 +36,7 @@ class TablerController extends Controller
             $tables = Table::withTrashed()->sortBy('table_name')->get();
         }
         else{
-            $tables = Table::all()->sortBy('table_name');
+            $tables = Table::orderBy('table_name')->get();
         }
 
         return view('citynexus::tabler.index', compact('tables'));
@@ -57,7 +51,7 @@ class TablerController extends Controller
     public function postUploader(Request $request)
     {
 
-        $this->authorize('citynexus', ['group' => 'datasets', 'method' => 'create']);
+        $this->authorize('citynexus', ['group' => 'datasets', 'method' => 'upload']);
 
         $this->validate($request, [
                 'file' => 'required'
@@ -255,7 +249,14 @@ class TablerController extends Controller
         {
             $upload = null;
             if(isset($settings->unique_id) && $settings->unique_id != null) {
-                $existing = DB::table($table->table_name)->lists($settings->unique_id);
+                $uid = $settings->unique_id;
+                $existing_records = DB::table($table->table_name)->get([$uid]);
+                $existing = [];
+                foreach($existing_records as $i)
+                {
+                    $existing[$uid] = $uid;
+                }
+                dd($uid);
             }
             if(!Schema::hasColumn($table->table_name, 'processed_at'))
             {
@@ -288,7 +289,13 @@ class TablerController extends Controller
             if(count($upload) > 0)
             {
                 DB::table($table->table_name)->insert($upload);
-                $new_ids = DB::table($table->table_name)->where('upload_id', $upload_id)->lists('id');
+
+                $new_ids_obj = DB::table($table->table_name)->where('upload_id', $upload_id)->get(['id']);
+                $new_ids = [];
+                foreach($new_ids_obj as $i)
+                {
+                    $new_ids[] = $i;
+                }
 
                 foreach($new_ids as $record)
                 {
@@ -483,30 +490,6 @@ class TablerController extends Controller
         unset($dataset['_token']);
         return view('citynexus::tabler.snipits._field_settings', compact('dataset', 'scheme', 'field'));
     }
-
-    public function getDropboxTest()
-    {
-
-//        Config::set(['connections' => [
-//
-//            'test' => [
-//                'token'  => 'C8oGDpOoOKUAAAAAAAAPsiaxeTUEbkgHOwZKBQ7hS2eWZqHqgc-uNCqdN5TPQgz5',
-//                'app'    => '5gmljq1uggpcrh9']
-//            ]]
-//        );
-        $file = '/Winthrop Data - Tax Collector/Tax Title Properties as of 6-22-16 As Sent.xlsx';
-        $metadata = $this->dropbox->connection('test')->getMetadata($file);
-        $mime_type = $metadata['mime_type'];
-
-        $stream = fopen('data://' . $mime_type . ',','w+');
-        $drop = $this->dropbox->connection('test')->getFile('/Winthrop Data - Tax Collector/Tax Title Properties as of 6-22-16 As Sent.xlsx', $stream);
-
-        dd($stream);
-        $table = Excel::load($drop, function($reader){$reader->toArray();});
-
-        $table = Table::create(['raw_upload' => json_encode($table)]);
-
-        return redirect(action('\CityNexus\CityNexus\Http\TablerController@getCreateScheme', ['table_id' => $table->id]));
 
     public function getRelinkRecord(Request $request, $table, $id, $newId = null)
     {
