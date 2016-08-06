@@ -20,6 +20,7 @@ class ReportController extends Controller
         $tables = new Table();
         return view('citynexus::reports.property.create', compact('datasets', 'tables'));
     }
+
     public function postCreateProperty(Request $request)
     {
         $report = $request->all();
@@ -28,10 +29,12 @@ class ReportController extends Controller
         Session::flash('flash_success', 'Report Saved');
         return redirect('/');
     }
+
     public function getPropertyReport($report_id, $property_id)
     {
         $report = Report::find($report_id);
         $property = Property::find($property_id);
+
         foreach($report->settings as $key => $setting)
         {
             switch($key)
@@ -49,6 +52,7 @@ class ReportController extends Controller
         }
         return view('citynexus::reports.property.view', compact('report_info', 'property', 'report'));
     }
+
     private function propertyInfo($setting, $property)
     {
         $return = [];
@@ -70,8 +74,10 @@ class ReportController extends Controller
                     null;
             }
         }
+
         return $return;
     }
+
     private function datasetElements($setting, $property_id)
     {
         $return = [];

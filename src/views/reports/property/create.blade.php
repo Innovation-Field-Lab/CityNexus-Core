@@ -64,6 +64,7 @@
                 </form>
             </div>
         </div>
+   
     </div>
 
 @stop
@@ -74,14 +75,15 @@
 <script>
     function selectAllDataset( id )
     {
-        if($("#dataset-" + id).attr('checked') === 'checked')
-        {
-            $(".dataset-" + id).removeAttr('checked');
-        }
+
+       if($("#dataset-" + id).attr('checked') === 'checked')
+       {
+           $(".dataset-" + id).removeAttr('checked');
+       }
         else
-        {
-            $(".dataset-" + id).attr('checked', 'checked');
-        }
+       {
+           $(".dataset-" + id).attr('checked', 'checked');
+       }
     }
 </script>
 @endpush

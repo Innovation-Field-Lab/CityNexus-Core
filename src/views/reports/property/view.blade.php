@@ -47,27 +47,28 @@
     <h3>Data Sets</h3>
     @foreach($report_info['datasets'] as $k => $i)
         @if($i != null)
-            <table>
-                <caption>{{\CityNexus\CityNexus\Table::where('table_name', $k)->first()->table_title}}</caption>
-                <tr>
 
-                    @foreach($i[0] as $column => $row)
-                        <th>
-                            {{ucwords($column)}}
-                        </th>
+        <table>
+            <caption>{{\CityNexus\CityNexus\Table::where('table_name', $k)->first()->table_title}}</caption>
+            <tr>
+
+            @foreach($i[0] as $column => $row)
+                    <th>
+                        {{ucwords($column)}}
+                    </th>
+            @endforeach
+            </tr>
+
+        @foreach($i as $row)
+                <tr>
+                    @foreach($row as $cell)
+                    <td>
+                        {{$cell}}
+                    </td>
                     @endforeach
                 </tr>
-
-                @foreach($i as $row)
-                    <tr>
-                        @foreach($row as $cell)
-                            <td>
-                                {{$cell}}
-                            </td>
-                        @endforeach
-                    </tr>
-                @endforeach
-            </table>
-            `       @endif
+            @endforeach
+        </table>
+`       @endif
     @endforeach
 @endif
