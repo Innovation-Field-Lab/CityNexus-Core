@@ -1,8 +1,7 @@
 <h4>Choose File to Upload</h4>
-
     <table class="table table-striped">
         @foreach($items as $i)
-            @unless($i->size == null)
+            @if(isset($i->size) && $i->size != null)
             <tr>
                 <td>
                     {{$i->name}}
@@ -14,6 +13,6 @@
                     <div class="btn btn-primary btn-sm" onclick="processUpload('{{$i->path_display}}')" >Select</div>
                 </td>
             </tr>
-            @endunless
+            @endif
         @endforeach
     </table>

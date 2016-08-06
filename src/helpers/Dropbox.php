@@ -4,7 +4,6 @@
 namespace CityNexus\CityNexus;
 
 use CityNexus\CityNexus\Http\TablerController;
-use jyggen\Curl;
 use Maatwebsite\Excel\Facades\Excel;
 
 class Dropbox
@@ -12,14 +11,26 @@ class Dropbox
 
     public function getFileList($settings)
     {
-//        $app = ($settings->dropbox_app, $settings->dropbox_secret, $settings->dropbox_token);
-        $listFolderContents = \GrahamCampbell\Dropbox\Facades\Dropbox::getAdapter();
-        dd($listFolderContents);
-        $items = $listFolderContents->getItems();
-        $files = $items->all();
+        $data =[
+            'path' => $settings->path
+        ];
+        $post = json_encode($data);
 
-        return $files;
+        $url = 'https://api.dropboxapi.com/2/files/list_folder';
+        $curl = curl_init($url); //initialise
+        curl_setopt($curl,CURLOPT_HTTPHEADER,array('Authorization: Bearer ' . $settings->dropbox_token,'Content-Type: application/json'));
+        curl_setopt($curl, CURLOPT_POST, 1);
+        curl_setopt($curl, CURLOPT_POSTFIELDS, $post);
+        curl_setopt($curl, CURLOPT_RETURNTRANSFER, true);
+        $response = curl_exec($curl);
+
+        $items = \GuzzleHttp\json_decode($response)->entries;
+
+        $items = (object) $items;
+
+        return $items;
     }
+
 
     public function processUpload($settings, $table_id, $path = null)
     {
