@@ -12,22 +12,6 @@ $section = 'dataset';
             <div class="card-box table-responsive" id="connection_setup">
 
                 <div class="form-group">
-                    <label for="settings[dropbox_app]" class="control-label col-sm-4">Dropbox App ID</label>
-
-                    <div class="col-sm-8">
-                        <input type="text" class="form-control" id="settings_dropbox_app" name="settings[dropbox_app]" value="d10tut6g3aazh9x"/>
-                    </div>
-
-                </div>
-                <div class="form-group">
-                    <label for="settings[dropbox_secret]" class="control-label col-sm-4">Dropbox Secret</label>
-
-                    <div class="col-sm-8">
-                        <input type="text" class="form-control" id="settings_dropbox_secret" name="settings[dropbox_secret]"
-                               value="a4a4xks19rja8iv"/>
-                    </div>
-                </div>
-                <div class="form-group">
                     <label for="settings[dropbox_token]" class="control-label col-sm-4">Dropbox Token</label>
 
                     <div class="col-sm-8">
@@ -39,7 +23,7 @@ $section = 'dataset';
                     <label for="settings[path]" class="control-label col-sm-4">Dropbox Path</label>
 
                     <div class="col-sm-8">
-                        <input type="text" class="form-control" id="settings_path" name="settings[path]"
+                        <input type="text" class="form-control" id="settings_path" name="settings[dropbox_path]"
                                value="/Winthrop Data/"/>
                     </div>
                 </div>
@@ -57,8 +41,6 @@ $section = 'dataset';
 
 <script>
 
-    var app = $('#settings_dropbox_app').val();
-    var secret = $('#settings_dropbox_secret').val();
     var token = $('#settings_dropbox_token').val();
     var path = $('#settings_path').val();
 
@@ -70,8 +52,6 @@ $section = 'dataset';
             data: {
                 _token: "{{csrf_token()}}",
                 settings: {
-                    dropbox_app: app,
-                    dropbox_secret: secret,
                     dropbox_token: token,
                     path: path
                 },
@@ -91,8 +71,6 @@ $section = 'dataset';
             data: {
                 _token: "{{csrf_token()}}",
                 settings: {
-                    dropbox_app: app,
-                    dropbox_secret: secret,
                     dropbox_token: token,
                     path: path
                 },
@@ -103,9 +81,8 @@ $section = 'dataset';
         }).success(function (data) {
             $('#schedule_sync').html(data);
             $('#connection_setup').addClass('hidden');
-            $('#final_settings_dropbox_app').val(app);
-            $('#final_settings_dropbox_secret').val(secret);
             $('#final_settings_dropbox_token').val(token);
+            $('#final_settings_dropbox_path').val(path);
             $('#final_dataset_id').val({{$dataset_id}});
         });
     }

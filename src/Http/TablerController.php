@@ -255,7 +255,6 @@ class TablerController extends Controller
                 {
                     $existing[$uid] = $uid;
                 }
-                dd($uid);
             }
             if(!Schema::hasColumn($table->table_name, 'processed_at'))
             {

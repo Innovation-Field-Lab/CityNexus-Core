@@ -9,6 +9,7 @@ use CityNexus\CityNexus\Uploader;
 use Illuminate\Http\Request;
 use App\Http\Requests;
 use App\Http\Controllers\Controller;
+use Illuminate\Support\Facades\Session;
 use Mockery\CountValidator\Exception;
 
 class DatasetController extends Controller
@@ -52,7 +53,10 @@ class DatasetController extends Controller
 
     public function postScheduleDropbox(Request $request)
     {
-        Uploader::create($request->all());
+        $uploader = $request->all();
+        $uploader['settings_json'] = json_encode($uploader['settings']);
+        $uploader['type'] = 'dropbox';
+        $uploader = Uploader::create($uploader);
 
         Session::flash('flash_success', 'Dropbox Sync Scheduled');
 

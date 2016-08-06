@@ -8,7 +8,7 @@ class Uploader extends Model
 {
     protected $table = 'citynexus_uploaders';
 
-    protected $fillable = ['dataset_id', 'name', 'type', 'settings_json'];
+    protected $fillable = ['dataset_id', 'name', 'type', 'frequency', 'settings_json'];
 
     public function dataset()
     {

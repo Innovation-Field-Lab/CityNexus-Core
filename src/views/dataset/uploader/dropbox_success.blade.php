@@ -26,8 +26,8 @@
             <button class="form-control btn btn-primary">Schedule Dropbox Sync</button>
         </div>
     </div>
-    <input type="hidden" name="settings[dropbox_app]" id="final_settings_dropbox_app">
-    <input type="hidden" name="settings[dropbox_secret]" id="final_settings_dropbox_secret">
     <input type="hidden" name="settings[dropbox_token]" id="final_settings_dropbox_token">
+    <input type="hidden" name="settings[dropbox_path]" id="final_settings_dropbox_path">
+
     <input type="hidden" name="dataset_id" id="final_dataset_id">
 </form>
