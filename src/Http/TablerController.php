@@ -51,11 +51,7 @@ class TablerController extends Controller
     public function postUploader(Request $request)
     {
 
-<<<<<<< HEAD
-        $this->authorize('citynexus', ['group' => 'datasets', 'method' => 'upload']);
-=======
-        $this->authorize('citynexus', ['datasets', 'create']);
->>>>>>> master
+        $this->authorize('citynexus', ['datasets', 'upload']);
 
         $this->validate($request, [
                 'file' => 'required'
