@@ -14,6 +14,12 @@ use CityNexus\CityNexus\GeocodeJob;
 
 class TableBuilder
 {
+
+    public function __construct()
+    {
+        $this->filters = new DataFilter();
+    }
+
     public function create($table)
     {
         $table_name = 'tabler_' . $this->cleanName($table->table_title);
@@ -304,6 +310,16 @@ class TableBuilder
 
         $settings = $dataset->schema;
 
+        //Check for filters on any data values and process filter
+        foreach($settings as $i)
+        {
+            if(isset($i->filters) && isset($data->$i->key))
+            {
+                $data->$i->key = $this->filters->process($data->$i->key, $i->filters);
+            }
+        }
+
+
         $tabler = new TableBuilder();
 
         //create an array of sync values
@@ -311,9 +327,8 @@ class TableBuilder
 //        $pushValues = $tabler->findValues( $settings, 'push' );
 
         //if there is a sync value, identify the index id
-        if(isset($settings->property_id) && $settings->property_id)
+        if(isset($settings->property_id) && $settings->property_id != null)
         {
-
             $record[config('citynexus.index_id')] = $data->$settings->property_id;
         }
         elseif( count( $syncValues ) > 0)
@@ -322,7 +337,6 @@ class TableBuilder
 
             if($syncId != null)
             {
-
                 $record[config('citynexus.index_id')] = $syncId;
             }
 
