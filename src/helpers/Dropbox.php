@@ -46,6 +46,7 @@ class Dropbox
         //Get Table
 
         $table = Table::find($table_id);
+        $table->touch();
         $upload = Upload::create(['table_id' => $table_id, 'note' => 'Dropbox upload']);
         $tabler = new TablerController();
         $tabler->processUpload($table, $data, $upload->id);
