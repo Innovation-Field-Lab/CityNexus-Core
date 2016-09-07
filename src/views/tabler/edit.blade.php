@@ -64,8 +64,6 @@
                     <table class="table" id="table">
                         <thead>
                         <td>Key</td>
-                        <td>Ignore</td>
-                        <td>Visible</td>
                         <td>Field Name
                             <i class="ti-help" style="cursor: pointer" onclick="getHelp('tabler.uploader.fieldname')" ></i>
                         </td>
@@ -73,9 +71,11 @@
                         <td>Sync
                             <i class="ti-help" style="cursor: pointer" onclick="getHelp('tabler.uploader.sync')" ></i>
                         </td>
-                        <td>Push</td>
-                        <td>Meta</td>
+                        <td>Ignore</td>
+                        <td>Visible</td>
+                        <td>Config</td>
                         </thead>
+
                         <tbody>
                             @foreach($scheme as $key => $item)
                                 @include('citynexus::tabler._edit_item')
@@ -88,12 +88,12 @@
         </div>
     </div>
 
-    <div id="meta-modal" class="modal-demo">
+    <div id="config-modal" class="modal-demo">
         <button type="button" class="close" onclick="Custombox.close();">
             <span>&times;</span><span class="sr-only">Close</span>
         </button>
-        <h4 class="custom-modal-title" id="meta-model-title">Add Meta Data for </h4>
-        <div id="meta-modal-text" class="custom-modal-text">
+        <h4 class="custom-modal-title" id="config-modal-title">Add Meta Data for </h4>
+        <div id="config-modal-text" class="custom-modal-text">
         </div>
     </div>
 
@@ -102,27 +102,44 @@
 @push('js_footer')
 
 <script>
-    function addMeta( id )
+    function addConfig( id )
     {
         var field = $("#name-" + id).val();
-        $("#modal-title").html('Add meta data for ' + field);
+        $("#config-modal-title").html('Configuration settings for "' + field + '"');
 
         var meta = $("#metadata-" + id).val();
-        var modalBody = $("#modal-text");
+        var modalBody = $("#config-modal-text");
 
-        var newText = "<textarea id='metadata' class='form-control'>" +
+        var metaData = "<div class='form-group'><label>Meta Data</label><textarea id='metadata' class='form-control'>" +
         meta +
-        '</textarea><br><div class="btn btn-primary" onClick="Custombox.close(); saveMeta(\'' + id + '\')">Save</div>';
+        '</textarea></div><br>';
 
-        modalBody.html(newText);
+        var filter = "<div class='form-group'><label>Data Filters</label>" +
+                "<div style='height: 75px; border-color: #0a6aa1; border-width: 1px; overflow: scroll'>" +
+                "<input type='checkbox' name='new-filters' value='1'> <label>Test Filter 1</label><br>" +
+                "<input type='checkbox' name='new-filters' value='2'> <label>Test Filter 2</label><br>" +
+                "<input type='checkbox' name='new-filters' value='3'> <label>Test Filter 3</label><br>" +
+                "<input type='checkbox' name='new-filters' value='4'> <label>Test Filter 4</label><br>" +
+                "<input type='checkbox' name='new-filters' value='5'> <label>Test Filter 5</label><br>" +
+                "</div>" +
+                "</div>";
+        var save = '<div class="btn btn-primary" onClick="Custombox.close(); saveConfig(\'' + id + '\')">Save</div>';
+        var content = metaData + save;
+
+        modalBody.html(content);
 
         Custombox.open({
-            target: '#modal',
+            target: '#config-modal',
             effect: 'fadein'
         });
     }
 
-    function saveMeta( key )
+    function addFilter()
+    {
+        triggerModal('test', 'test');
+    }
+
+    function saveConfig( key )
     {
         var entry = $("#metadata").val();
         $('#metadata-' + key).val( entry );
