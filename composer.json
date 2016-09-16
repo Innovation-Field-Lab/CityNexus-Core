@@ -3,7 +3,7 @@
     "description": "A citywide performance management analytics platform",
     "require": {
         "php": ">=5.5.9",
-        "laravel/framework": "~5.2.*",
+        "laravel/framework": "5.2.*",
         "maatwebsite/excel": "~2.0.0",
         "pda/pheanstalk": "^3.1",
         "backup-manager/laravel": "^1.1",
