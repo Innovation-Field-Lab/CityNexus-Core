@@ -3,14 +3,20 @@
     "description": "A citywide performance management analytics platform",
     "require": {
         "php": ">=5.5.9",
-        "laravel/framework": "5.1.*",
-        "barryvdh/laravel-debugbar": "^2.0",
-        "yajra/laravel-datatables-oracle":"~6.0",
+        "laravel/framework": "~5.2.*",
         "maatwebsite/excel": "~2.0.0",
         "pda/pheanstalk": "^3.1",
-        "toin0u/geocoder-laravel": "@stable",
         "backup-manager/laravel": "^1.1",
-        "league/flysystem-aws-s3-v3": "^1.0"
+        "league/flysystem-aws-s3-v3": "^1.0",
+        "phaza/laravel-postgis": "^3.1",
+        "willdurand/geocoder": "^2.8",
+        "toin0u/geocoder-laravel": "@stable",
+        "spatie/laravel-glide": "^2.3",
+        "doctrine/dbal": "*",
+        "graham-campbell/dropbox": "^3.3",
+        "guzzlehttp/guzzle": "~5.3|~6.0",
+        "anlutro/curl": "^1.4",
+        "phayes/geophp": "^1.2"
     },
     "license": "MIT",
     "autoload": {
@@ -21,7 +27,7 @@
     "authors": [
         {
             "name": "Sean Alaback",
-            "email": "sean.alaback@gmail.com"
+            "email": "sean@citynexus.org"
         }
     ],
     "minimum-stability": "dev"
